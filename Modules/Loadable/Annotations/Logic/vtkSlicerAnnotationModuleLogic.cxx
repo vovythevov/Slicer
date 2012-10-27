@@ -2995,14 +2995,14 @@ vtkMRMLAnnotationHierarchyNode *vtkSlicerAnnotationModuleLogic::GetActiveHierarc
     }
   if (this->GetMRMLScene()->GetNodeByID(this->GetActiveHierarchyNodeID()) == NULL)
     {
-    // if the node with the active id can't be found in the scene, reset it to
-    // null
-    this->SetActiveHierarchyNodeID(NULL);
     // try finding the top level hierarchy
     char* toplevelNodeID = this->GetTopLevelHierarchyNodeID();
     if (!toplevelNodeID)
       {
       vtkErrorMacro("GetActiveHierarchyNode: the active hierarchy node id was invalid and can't find or make a top level hierarchy node");
+      // if the node with the active id can't be found in the scene, reset it to
+      // null
+      this->SetActiveHierarchyNodeID(NULL);
       return NULL;
       }
     else
@@ -3010,7 +3010,8 @@ vtkMRMLAnnotationHierarchyNode *vtkSlicerAnnotationModuleLogic::GetActiveHierarc
       this->SetActiveHierarchyNodeID(toplevelNodeID);
       }
     }
-  return vtkMRMLAnnotationHierarchyNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(this->GetActiveHierarchyNodeID()));
+  return vtkMRMLAnnotationHierarchyNode::SafeDownCast(
+    this->GetMRMLScene()->GetNodeByID(this->GetActiveHierarchyNodeID()));
 }
 
   //---------------------------------------------------------------------------
