@@ -199,10 +199,12 @@ void qSlicerAnnotationModuleWidget::moveDownSelected()
 {
   Q_D(qSlicerAnnotationModuleWidget);
 
-  const char* mrmlId = d->logic()->MoveAnnotationDown(d->hierarchyTreeView->firstSelectedNode());
+  const char* mrmlId =
+    d->logic()->MoveAnnotationDown(d->hierarchyTreeView->firstSelectedNode());
+  vtkMRMLNode* mrmlNode = this->mrmlScene()->GetNodeByID(mrmlId);
 
   d->hierarchyTreeView->clearSelection();
-  d->hierarchyTreeView->setSelectedNode(mrmlId);
+  d->hierarchyTreeView->setCurrentNode(mrmlNode);
 }
 
 //-----------------------------------------------------------------------------
@@ -211,9 +213,10 @@ void qSlicerAnnotationModuleWidget::moveUpSelected()
   Q_D(qSlicerAnnotationModuleWidget);
 
   const char* mrmlId = d->logic()->MoveAnnotationUp(d->hierarchyTreeView->firstSelectedNode());
+  vtkMRMLNode* mrmlNode = this->mrmlScene()->GetNodeByID(mrmlId);
 
   d->hierarchyTreeView->clearSelection();
-  d->hierarchyTreeView->setSelectedNode(mrmlId);
+  d->hierarchyTreeView->setCurrentNode(mrmlNode);
 }
 
 //-----------------------------------------------------------------------------
@@ -424,7 +427,9 @@ void qSlicerAnnotationModuleWidget::onAddHierarchyButtonClicked()
   this->refreshTree();
   if (d->logic()->AddHierarchy())
     {
-    d->hierarchyTreeView->setSelectedNode(d->logic()->GetActiveHierarchyNodeID());
+    vtkMRMLNode* node = d->logic()->GetMRMLScene()->GetNodeByID(
+      d->logic()->GetActiveHierarchyNodeID());
+    d->hierarchyTreeView->setCurrentNode(node);
     }
 }
 
