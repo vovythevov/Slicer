@@ -128,6 +128,7 @@ class VTK_MRML_EXPORT vtkMRMLSelectionNode : public vtkMRMLNode
   {
     ActiveAnnotationIDChangedEvent = 19001,
     AnnotationIDListModifiedEvent,
+    UnitModifiedEvent,
   };
 
   /// Description:
@@ -150,6 +151,18 @@ class VTK_MRML_EXPORT vtkMRMLSelectionNode : public vtkMRMLNode
   std::string GetAnnotationResourceByID(std::string id);
   /// Get the number of ids in the list
   int GetNumberOfAnnotationIDsInList() { return static_cast<int>(this->AnnotationIDList.size()); };
+
+  /// Description:
+  /// Helper to set/get the current unit node associated with the given
+  /// quantity.
+  /// \sa GetNodeReferenceID(), SetAndObserveNodeReferenceID()
+  const char* GetUnitNodeID(const char* quantity);
+  void SetUnitNodeID(const char* quantity, const char* id);
+
+  /// Description:
+  /// Method to propagate events generated in units nodes
+  void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData);
+
 protected:
   vtkMRMLSelectionNode();
   ~vtkMRMLSelectionNode();
