@@ -48,15 +48,17 @@ class IslandEffectOptions(Effect.EffectOptions):
     self.sizeLabel.setToolTip("Minimum size of islands to be considered.")
     self.frame.layout().addWidget(self.sizeLabel)
     self.widgets.append(self.sizeLabel)
-    self.minimumSize = qt.QSpinBox(self.frame)
+    self.minimumSize = qt.qMRMLSpinBox(self.frame)
     self.minimumSize.minimum = 0
     self.minimumSize.maximum = vtk.VTK_INT_MAX
     self.minimumSize.value = 0
+    self.minimumSize.quantity = "length"
     self.frame.layout().addWidget(self.minimumSize)
     self.widgets.append(self.minimumSize)
 
     self.connections.append( (self.fullyConnected, "clicked()", self.updateMRMLFromGUI ) )
     self.connections.append( (self.minimumSize, "valueChanged(int)", self.updateMRMLFromGUI ) )
+    self.connections.append( (self, 'mrmlSceneChanged(vtkMRMLScene*)', self.minimumSize.setMRMLScene) )
 
   def destroy(self):
     super(IslandEffectOptions,self).destroy()

@@ -146,12 +146,18 @@ protected:
   void AddObserversToInteractionNode();
   void RemoveObserversFromInteractionNode();
 
+  /// Observe the selection node.
+  void AddObserversToSelectionNode();
+  void RemoveObserversFromSelectionNode();
+
   /// Preset functions for certain events.
   virtual void OnMRMLAnnotationNodeModifiedEvent(vtkMRMLNode* node);
   virtual void OnMRMLAnnotationNodeTransformModifiedEvent(vtkMRMLNode* node);
   virtual void OnMRMLAnnotationNodeLockModifiedEvent(vtkMRMLNode* node);
   virtual void OnMRMLAnnotationDisplayNodeModifiedEvent(vtkMRMLNode *node);
   virtual void OnMRMLAnnotationControlPointModifiedEvent(vtkMRMLNode *node);
+  virtual void OnMRMLSelectionNodeUnitModifiedEvent(vtkMRMLSelectionNode* node) {};
+
   //
   // Handling of interaction within the RenderWindow
   //

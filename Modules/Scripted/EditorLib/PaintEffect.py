@@ -62,11 +62,11 @@ class PaintEffectOptions(LabelEffect.LabelEffectOptions):
     self.radiusLabel.setToolTip("Set the radius of the paint brush in millimeters")
     self.radiusFrame.layout().addWidget(self.radiusLabel)
     self.widgets.append(self.radiusLabel)
-    self.radiusSpinBox = ctk.ctkSpinBox(self.radiusFrame)
+    self.radiusSpinBox = slicer.qMRMLSpinBox(self.radiusFrame)
     self.radiusSpinBox.setToolTip("Set the radius of the paint brush in millimeters")
+    self.minimumSize.quantity = "length"
     self.radiusSpinBox.minimum = self.minimumRadius
     self.radiusSpinBox.maximum = self.maximumRadius
-    self.radiusSpinBox.suffix = "mm"
     from math import log,floor
     decimals = floor(log(self.minimumRadius,10))
     if decimals < 0:
@@ -113,6 +113,7 @@ class PaintEffectOptions(LabelEffect.LabelEffectOptions):
     self.connections.append( (self.pixelMode, 'clicked()', self.updateMRMLFromGUI) )
     self.connections.append( (self.radius, 'valueChanged(double)', self.onRadiusValueChanged) )
     self.connections.append( (self.radiusSpinBox, 'valueChanged(double)', self.onRadiusSpinBoxChanged) )
+    self.connections.append( (self, 'mrmlSceneChanged(vtkMRMLScene*)', self.radiusSpinBox.setMRMLScene) )
 
     # Add vertical spacer
     self.frame.layout().addStretch(1)
