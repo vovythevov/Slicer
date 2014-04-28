@@ -58,6 +58,7 @@ vtkMRMLCameraNode::vtkMRMLCameraNode()
   camera->Delete();
 
   this->AppliedTransform = vtkMatrix4x4::New();
+  this->AutoAdjustCameraClippingRange = true;
  }
 
 //----------------------------------------------------------------------------
@@ -125,7 +126,8 @@ void vtkMRMLCameraNode::WriteXML(ostream& of, int nIndent)
       }
     of << indent << " appliedTransform=\"" << ss.str() << "\"";
     }
-
+  of << indent << " autoAdjustCameraClippingRange=\""
+     << this->AutoAdjustCameraClippingRange << "\"";
 }
 
 //----------------------------------------------------------------------------
@@ -222,6 +224,14 @@ void vtkMRMLCameraNode::ReadXMLAttributes(const char** atts)
           }
         }
       }
+    else if (!strcmp(attName, "autoAdjustCameraClippingRange"))
+      {
+      std::stringstream ss;
+      ss << attValue;
+      bool autoAdjust;
+      ss >> autoAdjust;
+      this->SetAutoAdjustCameraClippingRange(autoAdjust);
+      }
     }  
     this->EndModify(disabledModify);
 
@@ -245,15 +255,16 @@ void vtkMRMLCameraNode::Copy(vtkMRMLNode *anode)
   this->SetParallelProjection(node->GetParallelProjection());
   this->SetParallelScale(node->GetParallelScale());
   this->AppliedTransform->DeepCopy(node->GetAppliedTransform());
+  this->SetClippingRange(node->GetClippingRange()[0],
+                         node->GetClippingRange()[1]);
+  this->SetAutoAdjustCameraClippingRange(
+    node->GetAutoAdjustCameraClippingRange());
   // Important, do not call SetActiveTag() or the owner of the current tag
   // (node) will lose its tag, and the active camera will be untagged, and
   // a the active camera of the current view will be reset to NULL, and a 
   // new camera will be created on the fly by VTK the next time an active
   // camera is need, one completely disconnected from Slicer3's MRML/internals
   this->SetInternalActiveTag(node->GetActiveTag());
-  // Maybe the new position and focalpoint combo doesn't fit the existing
-  // clipping range
-  this->ResetClippingRange();
   this->EndModify(disabledModify);
 
 }
@@ -565,14 +576,26 @@ vtkMRMLCameraNode* vtkMRMLCameraNode::FindActiveTagInScene(const char *tag)
 }
 
 //---------------------------------------------------------------------------
+void vtkMRMLCameraNode::SetClippingRange(double near, double far)
+{
+  if (this->Camera)
+    {
+    this->Camera->SetClippingRange(near, far);
+    }
+}
+
+//---------------------------------------------------------------------------
+double* vtkMRMLCameraNode::GetClippingRange()
+{
+  return this->Camera ? this->Camera->GetClippingRange() : 0;
+}
+
+//---------------------------------------------------------------------------
 void vtkMRMLCameraNode::ResetClippingRange()
 {
   // \tbd: use vtkRenderer::ResetClippingRange ?
-  // Need to get the renderer from the view node associated with the camera
-  if (this->Camera)
-    {
-    this->Camera->SetClippingRange(0.1, this->Camera->GetDistance()*2);
-    }
+  this->SetClippingRange(this->Camera->GetDistance() / 1000.,
+                         this->Camera->GetDistance() * 10.);
 }
 
 //---------------------------------------------------------------------------
