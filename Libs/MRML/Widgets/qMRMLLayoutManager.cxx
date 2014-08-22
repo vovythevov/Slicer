@@ -179,7 +179,8 @@ void qMRMLLayoutSliceViewFactory::setSliceLogics(vtkCollection* sliceLogics)
       {
       qMRMLSliceWidget* sliceWidget =
         qobject_cast<qMRMLSliceWidget*>(viewWidget(i));
-      vtkMRMLSliceLogic* sliceLogic = sliceWidget->sliceLogic();
+      vtkMRMLSliceLogic* sliceLogic =
+        sliceWidget ? sliceWidget->sliceLogic() : 0;
       if (sliceLogics)
         {
         sliceLogics->AddItem(sliceLogic);
