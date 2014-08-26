@@ -115,7 +115,7 @@ void qMRMLChartViewPrivate::init()
   this->PopupWidget->setLayout(popupLayout);
 
   q->setHtml("");
-  q->show();
+  //q->show();
 }
 
 //---------------------------------------------------------------------------
@@ -202,7 +202,7 @@ void qMRMLChartViewPrivate::updateWidgetFromMRML()
   if (!chartnodeid)
     {
     q->setHtml("");
-    q->show();
+    //q->show();
     return;
     }
 
@@ -211,7 +211,7 @@ void qMRMLChartViewPrivate::updateWidgetFromMRML()
   if (!cn)
     {
     q->setHtml("");
-    q->show();
+    //q->show();
     return;
     }
 
@@ -341,8 +341,8 @@ void qMRMLChartViewPrivate::updateWidgetFromMRML()
   //qDebug() << plot.join("");
 
   // show the plot
-  q->setHtml(plot.join(""));
-  q->show();
+  q->setHtml(plot.join("")); 
+  //q->show();
 
 
   // expose this object to the Javascript code so Javascript can call
