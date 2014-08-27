@@ -58,10 +58,16 @@ public:
   virtual ~qMRMLColorModelPrivate();
   void init();
 
+  void updateColumnCount();
+  virtual int maxColumnId()const;
+
   vtkSmartPointer<vtkCallbackCommand> CallBack;
   vtkSmartPointer<vtkMRMLColorNode>   MRMLColorNode;
   bool                                NoneEnabled;
-  bool                                LabelInColor;
+  int ColorColumn;
+  int LabelColumn;
+  int OpacityColumn;
+  int CheckableColumn;
 };
 
 #endif
