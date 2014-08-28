@@ -417,12 +417,6 @@ void qSlicerViewersToolBarPrivate::updateWidgetFromMRML()
     // toggle on/off, navigation/cross-reference, style of crosshair
     //
 
-    // on/off
-    if (this->CrosshairToolButton)
-      {
-      this->CrosshairToggleAction->setChecked( crosshairNode->GetCrosshairMode() != vtkMRMLCrosshairNode::NoCrosshair );
-      }
-
     // style of crosshair
     if (this->CrosshairMapper->mapping(crosshairNode->GetCrosshairMode()) != NULL)
       {
@@ -450,6 +444,12 @@ void qSlicerViewersToolBarPrivate::updateWidgetFromMRML()
     if (crosshairNode->GetCrosshairMode() != vtkMRMLCrosshairNode::NoCrosshair)
       {
       this->CrosshairLastMode = crosshairNode->GetCrosshairMode();
+      }
+
+    // on/off
+    if (this->CrosshairToolButton)
+      {
+      this->CrosshairToggleAction->setChecked( crosshairNode->GetCrosshairMode() != vtkMRMLCrosshairNode::NoCrosshair );
       }
 
     }
