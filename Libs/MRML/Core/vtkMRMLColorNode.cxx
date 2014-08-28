@@ -382,6 +382,23 @@ const char *vtkMRMLColorNode::GetColorName(int ind)
 }
 
 //---------------------------------------------------------------------------
+int vtkMRMLColorNode::GetColorIndexByName(const char *name)
+{
+  if (this->GetNamesInitialised() && name != NULL)
+    {
+    std::string strName = name;
+    for (unsigned int i = 0; i < this->Names.size(); i++)
+      {
+      if (strName.compare(this->GetColorName(i)) == 0)
+        {
+        return i;
+        }
+      }
+    }
+    return -1;
+}
+
+//---------------------------------------------------------------------------
 std::string vtkMRMLColorNode::GetColorNameWithoutSpaces(int ind, const char *subst)
 {
   std::string name = std::string(this->GetColorName(ind));
