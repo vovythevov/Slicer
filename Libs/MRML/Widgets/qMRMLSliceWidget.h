@@ -112,11 +112,10 @@ public:
   /// propagates the logics to the qMRMLSliceControllerWidget
   void setSliceLogics(vtkCollection* logics);
 
-  /// Get a reference to the underlying Slice View
-  /// A const ctkVTKSliceView pointer is returned as you shouldn't
-  /// mess too much with it. If you do, be aware that you are probably
-  /// unsynchronizing the view from the nodes/logics.
-  Q_INVOKABLE const qMRMLSliceView* sliceView()const;
+  /// Get a reference to the underlying slice view. It is the widget that
+  /// renders the view (contains vtkRenderWindow).
+  /// \sa sliceController()
+  Q_INVOKABLE qMRMLSliceView* sliceView()const;
 
   //virtual bool eventFilter(QObject* object, QEvent* event);
 public slots:
