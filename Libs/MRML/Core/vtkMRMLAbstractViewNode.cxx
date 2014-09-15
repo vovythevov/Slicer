@@ -25,6 +25,9 @@
 // STD includes
 #include <sstream>
 
+const char* vtkMRMLAbstractViewNode::ViewNodeReferenceRole = "view";
+const char* vtkMRMLAbstractViewNode::ViewNodeReferenceMRMLAttributeName = "views";
+
 //----------------------------------------------------------------------------
 vtkMRMLAbstractViewNode::vtkMRMLAbstractViewNode()
 {
@@ -38,7 +41,10 @@ vtkMRMLAbstractViewNode::vtkMRMLAbstractViewNode()
 
   this->SetLayoutLabel("1");
   this->SetHideFromEditors(0);
- }
+
+  this->AddNodeReferenceRole(this->GetViewNodeReferenceRole(),
+                             this->GetViewNodeReferenceMRMLAttributeName());
+}
 
 //----------------------------------------------------------------------------
 vtkMRMLAbstractViewNode::~vtkMRMLAbstractViewNode()
@@ -235,4 +241,89 @@ void vtkMRMLAbstractViewNode::RemoveActiveFlagInScene()
       node->SetActive(0);
       }
     }
+}
+
+//----------------------------------------------------------------------------
+const char* vtkMRMLAbstractViewNode::GetViewNodeReferenceRole()const
+{
+  return vtkMRMLAbstractViewNode::ViewNodeReferenceRole;
+}
+
+//----------------------------------------------------------------------------
+const char* vtkMRMLAbstractViewNode::GetViewNodeReferenceMRMLAttributeName()const
+{
+  return vtkMRMLAbstractViewNode::ViewNodeReferenceMRMLAttributeName;
+}
+
+//----------------------------------------------------------------------------
+void vtkMRMLAbstractViewNode::AddViewNodeID(const char* viewNodeID)
+{
+  this->AddNodeReferenceID(this->GetViewNodeReferenceRole(), viewNodeID);
+}
+
+//----------------------------------------------------------------------------
+void vtkMRMLAbstractViewNode::RemoveViewNodeID(const char* viewNodeID)
+{
+  // \todo create a method that returns an index from a view node
+  // Search index
+  int index = -1;
+  for (int i = 0; i < this->GetNumberOfViewNodeIDs(); ++i)
+    {
+    if (strcmp(this->GetNthViewNodeID(i), viewNodeID) == 0)
+      {
+      index = i;
+      break;
+      }
+    }
+  if (index != -1)
+    {
+    this->RemoveNthNodeReferenceID(this->GetViewNodeReferenceRole(), index);
+    }
+}
+
+//----------------------------------------------------------------------------
+void vtkMRMLAbstractViewNode::RemoveAllViewNodeIDs()
+{
+  this->RemoveAllNodeReferenceIDs(this->GetViewNodeReferenceRole());
+}
+
+//----------------------------------------------------------------------------
+int vtkMRMLAbstractViewNode::GetNumberOfViewNodeIDs()
+{
+  return this->GetNumberOfNodeReferences(this->GetViewNodeReferenceRole());
+}
+
+//----------------------------------------------------------------------------
+const char* vtkMRMLAbstractViewNode::GetNthViewNodeID(int index)
+{
+  return this->GetNthNodeReferenceID(this->GetViewNodeReferenceRole(), index);
+}
+
+//----------------------------------------------------------------------------
+std::vector< std::string > vtkMRMLAbstractViewNode::GetViewNodeIDs()
+{
+  // \todo have the generic version in superclass
+  std::vector<std::string> ids;
+
+  std::vector< vtkMRMLNodeReference *> &references =
+    this->NodeReferences[std::string(this->GetViewNodeReferenceRole())];
+
+  for (int i = 0; i < references.size(); ++i)
+    {
+    ids.push_back(references[i]->GetReferencedNodeID());
+    }
+  return ids;
+}
+
+//----------------------------------------------------------------------------
+bool vtkMRMLAbstractViewNode::IsViewNodeIDPresent(const char* viewNodeID)
+{
+  return this->HasNodeReferenceID(this->GetViewNodeReferenceRole(), viewNodeID);
+}
+
+//----------------------------------------------------------------------------
+bool vtkMRMLAbstractViewNode::IsDisplayableInView(const char* viewNodeID)
+{
+  return this->GetNumberOfViewNodeIDs() == 0 ||
+         this->IsViewNodeIDPresent(viewNodeID);
 }

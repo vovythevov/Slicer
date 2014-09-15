@@ -587,7 +587,13 @@ void vtkMRMLSliceLogic::ProcessMRMLLogicsEvents()
         }
       if ( this->SliceCompositeNode != 0 )
         {
-        modelDisplayNode->SetSliceIntersectionVisibility( this->SliceCompositeNode->GetSliceIntersectionVisibility() );
+        modelDisplayNode->SetSliceIntersectionVisibility(
+          this->SliceCompositeNode->GetSliceIntersectionVisibility() );
+        modelDisplayNode->RemoveAllViewNodeIDs();
+        for (int i = 0; i < this->SliceNode->GetNumberOfViewNodeIDs(); ++i)
+          {
+          modelDisplayNode->AddViewNodeID(this->SliceNode->GetNthViewNodeID(i));
+          }
         }
       }
     }
@@ -935,6 +941,11 @@ void vtkMRMLSliceLogic::UpdatePipeline()
       {
       modelDisplayNode->SetSliceIntersectionVisibility(
         this->SliceCompositeNode->GetSliceIntersectionVisibility() );
+      modelDisplayNode->RemoveAllViewNodeIDs();
+      for (int i = 0; i < this->SliceNode->GetNumberOfViewNodeIDs(); ++i)
+        {
+        modelDisplayNode->AddViewNodeID(this->SliceNode->GetNthViewNodeID(i));
+        }
       }
 
     // Now update the image blend with the background and foreground and label
@@ -1337,6 +1348,7 @@ void vtkMRMLSliceLogic::CreateSliceModel()
     // in the SliceCompositeNode that tells if slices should be enabled for a given
     // slice viewer
     this->SliceModelDisplayNode->SetSliceIntersectionVisibility(0);
+    this->SliceModelDisplayNode->RemoveAllViewNodeIDs();
 
     std::string name = std::string(this->Name) + std::string(" ") + this->SLICE_MODEL_NODE_NAME_SUFFIX;
     this->SliceModelNode->SetName (name.c_str());

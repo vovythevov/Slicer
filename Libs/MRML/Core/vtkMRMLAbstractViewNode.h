@@ -92,12 +92,49 @@ public:
   vtkGetVector3Macro (BackgroundColor2, double);
   vtkSetVector3Macro (BackgroundColor2, double);
 
+  /// Add View Node ID for the view to display this node in.
+  /// \sa ViewNodeIDs, RemoveViewNodeID(), RemoveAllViewNodeIDs()
+  void AddViewNodeID(const char* viewNodeID);
+  /// Remove View Node ID for the view to display this node in.
+  /// \sa ViewNodeIDs, AddViewNodeID(), RemoveAllViewNodeIDs()
+  void RemoveViewNodeID(const char* viewNodeID);
+  /// Remove All View Node IDs for the views to display this node in.
+  /// \sa ViewNodeIDs, AddViewNodeID(), RemoveViewNodeID()
+  void RemoveAllViewNodeIDs();
+  /// Get number of View Node ID's for the view to display this node in.
+  /// If 0, display in all views
+  /// \sa ViewNodeIDs, GetViewNodeIDs(), AddViewNodeID()
+  int GetNumberOfViewNodeIDs();
+  /// Get View Node ID's for the view to display this node in.
+  /// If NULL, display in all views
+  /// \sa ViewNodeIDs, GetViewNodeIDs(), AddViewNodeID()
+  const char* GetNthViewNodeID(int index);
+  /// Get all View Node ID's for the view to display this node in.
+  /// If empty, display in all views
+  /// \sa ViewNodeIDs, GetNthViewNodeID(), AddViewNodeID()
+  std::vector< std::string > GetViewNodeIDs();
+  /// True if the view node id is present in the viewnodeid list
+  /// false if not found
+  /// \sa ViewNodeIDs, IsDisplayableInView(), AddViewNodeID()
+  bool IsViewNodeIDPresent(const char* viewNodeID);
+  /// Returns true if the viewNodeID is present in the ViewNodeId list
+  /// or there is no ViewNodeId in the list (meaning all the views display the
+  /// node)
+  /// \sa ViewNodeIDs, IsViewNodeIDPresent(), AddViewNodeID()
+  bool IsDisplayableInView(const char* viewNodeID);
+
 protected:
   vtkMRMLAbstractViewNode();
   ~vtkMRMLAbstractViewNode();
 
   vtkMRMLAbstractViewNode(const vtkMRMLAbstractViewNode&);
   void operator=(const vtkMRMLAbstractViewNode&);
+
+  static const char* ViewNodeReferenceRole;
+  static const char* ViewNodeReferenceMRMLAttributeName;
+
+  virtual const char* GetViewNodeReferenceRole()const;
+  virtual const char* GetViewNodeReferenceMRMLAttributeName()const;
 
   ///
   /// Label to show for the view (shortcut for the name)

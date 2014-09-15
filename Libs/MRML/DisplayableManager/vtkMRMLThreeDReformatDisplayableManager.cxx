@@ -334,7 +334,7 @@ void vtkMRMLThreeDReformatDisplayableManager::vtkInternal
 
   // Update the widget itself if necessary
   bool visible =
-    sliceNode->IsDisplayableInThreeDView(this->External->GetMRMLViewNode()->GetID())
+    sliceNode->IsDisplayableInView(this->External->GetMRMLViewNode()->GetID())
     && sliceNode->GetWidgetVisible();
 
   if ((!planeWidget->GetEnabled() && visible) ||
