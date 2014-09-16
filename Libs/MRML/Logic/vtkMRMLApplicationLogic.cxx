@@ -335,6 +335,43 @@ void vtkMRMLApplicationLogic::FitSliceToAll()
 }
 
 //----------------------------------------------------------------------------
+void vtkMRMLApplicationLogic::FitSlicesToVolume(const char* volumeNodeID)
+{
+  if (this->Internal->SliceLogics.GetPointer() == 0)
+    {
+    return;
+    }
+  std::string volume(volumeNodeID ? volumeNodeID : "");
+  vtkMRMLSliceLogic* sliceLogic = 0;
+  vtkCollectionSimpleIterator it;
+  for(this->Internal->SliceLogics->InitTraversal(it);
+      (sliceLogic = vtkMRMLSliceLogic::SafeDownCast(
+        this->Internal->SliceLogics->GetNextItemAsObject(it)));)
+    {
+    vtkMRMLSliceCompositeNode* sliceCompositeNode = sliceLogic->GetSliceCompositeNode();
+    if (!sliceCompositeNode)
+      {
+      continue;
+      }
+    std::string background(sliceCompositeNode->GetBackgroundVolumeID() ?
+      sliceCompositeNode->GetBackgroundVolumeID() : "");
+    std::string foreground(sliceCompositeNode->GetForegroundVolumeID() ?
+      sliceCompositeNode->GetBackgroundVolumeID() : "");
+    std::string labelmap(sliceCompositeNode->GetLabelVolumeID() ?
+      sliceCompositeNode->GetLabelVolumeID() : "");
+    if (volume.size() == 0 ||
+        volume == background || volume == foreground || volume == labelmap)
+      {
+      vtkMRMLSliceNode *sliceNode = sliceLogic->GetSliceNode();
+
+      int *dims = sliceNode->GetDimensions();
+      sliceLogic->FitSliceToAll(dims[0], dims[1]);
+      sliceLogic->SnapSliceOffsetToIJK();
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
 bool vtkMRMLApplicationLogic::Zip(const char *zipFileName, const char *directoryToZip)
 {
   // call function in vtkArchive

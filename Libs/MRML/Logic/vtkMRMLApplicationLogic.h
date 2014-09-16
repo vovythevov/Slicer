@@ -77,12 +77,18 @@ public:
   /// Apply the active volumes in the SelectionNode to the slice composite nodes
   /// Perform the default behavior related to selecting a volume
   /// (in this case, making it the background for all SliceCompositeNodes)
+  /// \sa FitSliceToAll(), FitSlicesToVolume()
   void PropagateVolumeSelection(int fit);
   void PropagateVolumeSelection() {this->PropagateVolumeSelection(1);}
 
 
   /// Fit all the volumes into their views
+  /// \sa FitSlicesToVolume()
   void FitSliceToAll();
+
+  /// Fit volume into all the views that display it.
+  /// \sa FitSliceToAll()
+  void FitSlicesToVolume(const char* volumeNodeID);
 
   /// zip the directory into a zip file
   /// Returns success or failure.
