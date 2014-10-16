@@ -319,10 +319,10 @@ def selectModule(module):
   moduleName = module
   if not isinstance(module, basestring):
     moduleName = module.name
-  self.moduleSelector().selectModule(moduleName)
+  moduleSelector().selectModule(moduleName)
 
 def selectedModule():
-  return self.moduleSelector().selectedModule()
+  return moduleSelector().selectedModule
 
 def moduleNames():
   from slicer import app
