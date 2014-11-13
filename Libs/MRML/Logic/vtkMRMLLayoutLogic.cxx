@@ -1397,9 +1397,7 @@ vtkMRMLNode* vtkMRMLLayoutLogic::CreateViewFromAttributes(const ViewAttributes& 
       const std::string& singletonTag = it->second;
       viewNode->SetLayoutName(singletonTag.c_str());
       }
-    std::string name = std::string("View");
-    name += std::string(viewNode->GetLayoutName());
-    viewNode->SetName(name.c_str());
+    viewNode->SetName(viewNode->GetLayoutName());
     }
   return node;
 }
