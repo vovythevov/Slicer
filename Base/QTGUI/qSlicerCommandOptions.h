@@ -36,6 +36,7 @@ class Q_SLICER_BASE_QTGUI_EXPORT qSlicerCommandOptions : public qSlicerCoreComma
   Q_PROPERTY(bool noMainWindow READ noMainWindow)
   Q_PROPERTY(bool showPythonInteractor READ showPythonInteractor)
   Q_PROPERTY(bool enableQtTesting READ enableQtTesting)
+  Q_PROPERTY(QString ndLibrary READ ndLibrary)
 public:
   typedef qSlicerCoreCommandOptions Superclass;
   qSlicerCommandOptions();
@@ -50,6 +51,8 @@ public:
   bool showPythonInteractor()const;
 
   bool enableQtTesting()const;
+
+  QString ndLibrary()const;
 
 protected:
   virtual void addArguments();

@@ -56,6 +56,12 @@ bool qSlicerCommandOptions::showPythonInteractor() const
 }
 
 //-----------------------------------------------------------------------------
+QString qSlicerCommandOptions::ndLibrary() const
+{
+  return this->parsedArgs().value("ndLibrary").toString();
+}
+
+//-----------------------------------------------------------------------------
 bool qSlicerCommandOptions::enableQtTesting()const
 {
 #ifdef Slicer_USE_QtTesting
@@ -91,4 +97,6 @@ void qSlicerCommandOptions::addArguments()
   this->addArgument("qt-testing", "", QVariant::Bool,
                     "Enable QtTesting in the user interface");
 #endif
+
+  this->addArgument("ndLibrary", "", QVariant::String, "Path to ndLibrary");
 }
