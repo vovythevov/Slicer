@@ -244,6 +244,59 @@ void qMRMLThreeDView::addDisplayableManager(const QString& displayableManagerNam
 }
 
 //------------------------------------------------------------------------------
+void qMRMLThreeDView::RotateToPosterior(bool inverse)
+{
+  vtkThreeDViewInteractorStyle* style =
+    vtkThreeDViewInteractorStyle::SafeDownCast(
+      this->interactor()->GetInteractorStyle());
+  if (!style)
+    {
+    return;
+    }
+  style->RotateToPosterior(inverse);
+}
+
+//------------------------------------------------------------------------------
+void qMRMLThreeDView::RotateToRight(bool inverse)
+{
+  vtkThreeDViewInteractorStyle* style =
+    vtkThreeDViewInteractorStyle::SafeDownCast(
+      this->interactor()->GetInteractorStyle());
+  if (!style)
+    {
+    return;
+    }
+  style->RotateToRight(inverse);
+}
+
+//------------------------------------------------------------------------------
+void qMRMLThreeDView::RotateToInferior(bool inverse)
+{
+  vtkThreeDViewInteractorStyle* style =
+    vtkThreeDViewInteractorStyle::SafeDownCast(
+      this->interactor()->GetInteractorStyle());
+  if (!style)
+    {
+    return;
+    }
+  style->RotateToInferior(inverse);
+}
+
+//------------------------------------------------------------------------------
+void qMRMLThreeDView
+::ResetCamera(bool resetRotation, bool resetTranslation, bool resetDistance)
+{
+  vtkThreeDViewInteractorStyle* style =
+    vtkThreeDViewInteractorStyle::SafeDownCast(
+      this->interactor()->GetInteractorStyle());
+  if (!style)
+    {
+    return;
+    }
+  style->ResetCamera(resetRotation, resetTranslation, resetDistance);
+}
+
+//------------------------------------------------------------------------------
 void qMRMLThreeDView::setMRMLScene(vtkMRMLScene* newScene)
 {
   Q_D(qMRMLThreeDView);

@@ -65,6 +65,15 @@ public:
   /// Returns the interactor style of the view
   //vtkInteractorObserver* interactorStyle()const;
 
+  /// Methods to rotate/reset the camera easily,
+  Q_INVOKABLE void RotateToPosterior(bool inverse = false);
+  Q_INVOKABLE void RotateToRight(bool inverse = false);
+  Q_INVOKABLE void RotateToInferior(bool inverse = false);
+  Q_INVOKABLE void ResetCamera(
+    bool resetRotation = true,
+    bool resetTranslation = true,
+    bool resetDistance = true);
+
 public slots:
 
   /// Set the MRML \a scene that should be listened for events

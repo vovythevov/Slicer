@@ -97,6 +97,16 @@ public:
   vtkGetObjectMacro(ModelDisplayableManager, vtkMRMLModelDisplayableManager);
   virtual void SetModelDisplayableManager(vtkMRMLModelDisplayableManager *modelDisplayableManager);
 
+  ///
+  /// Simple methods to move the camera
+  void RotateToPosterior(bool inverse = false);
+  void RotateToRight(bool inverse = false);
+  void RotateToInferior(bool inverse = false);
+  void ResetCamera(
+    bool resetRotation = true,
+    bool resetTranslation = true,
+    bool resetDistance = true);
+
 protected:
   vtkThreeDViewInteractorStyle();
   ~vtkThreeDViewInteractorStyle();

@@ -70,20 +70,17 @@ void vtkThreeDViewInteractorStyle::OnKeyPress()
     if (strcmp(this->Interactor->GetKeySym(), "KP_1") == 0 ||
         strcmp(this->Interactor->GetKeySym(), "End") == 0)
       {
-      this->CameraNode->RotateTo(
-        shift ? vtkMRMLCameraNode::Posterior : vtkMRMLCameraNode::Anterior );
+      this->RotateToPosterior(shift);
       }
     else if (strcmp(this->Interactor->GetKeySym(), "KP_3") == 0 ||
              strcmp(this->Interactor->GetKeySym(), "Next") == 0) // PageDown
       {
-      this->CameraNode->RotateTo(
-        shift ? vtkMRMLCameraNode::Right : vtkMRMLCameraNode::Left);
+      this->RotateToRight(shift);
       }
     else if (strcmp(this->Interactor->GetKeySym(), "KP_7") == 0 ||
              strcmp(this->Interactor->GetKeySym(), "Home") == 0)
       {
-      this->CameraNode->RotateTo(
-        shift ? vtkMRMLCameraNode::Inferior : vtkMRMLCameraNode::Superior);
+      this->RotateToInferior(shift);
       }
     else if (strcmp(this->Interactor->GetKeySym(), "KP_2") == 0 ||
              strcmp(this->Interactor->GetKeySym(), "Down") == 0)
@@ -136,18 +133,12 @@ void vtkThreeDViewInteractorStyle::OnKeyPress()
     else if (strcmp(this->Interactor->GetKeySym(), "KP_5") == 0 ||
              strcmp(this->Interactor->GetKeySym(), "Clear") == 0)
       {
-      this->CameraNode->Reset(
-        !shift,
-        shift,
-        false,
-        this->Interactor->FindPokedRenderer(0,0));
+      this->ResetCamera(!shift, shift, false);
       }
     else if (strcmp(this->Interactor->GetKeySym(), "KP_0") == 0 ||
              strcmp(this->Interactor->GetKeySym(), "Insert") == 0)
       {
-      this->CameraNode->Reset(
-        true, true, true,
-        this->Interactor->FindPokedRenderer(0,0));
+      this->ResetCamera();
       }
     else if (strcmp(this->Interactor->GetKeySym(), "plus") == 0)
       {
@@ -719,6 +710,56 @@ void vtkThreeDViewInteractorStyle::SetModelDisplayableManager(
     vtkMRMLModelDisplayableManager * modelDisplayableManager)
 {
   this->ModelDisplayableManager = modelDisplayableManager;
+}
+
+//----------------------------------------------------------------------------
+void vtkThreeDViewInteractorStyle::RotateToPosterior(bool inverse)
+{
+  if (!this->CameraNode)
+    {
+    return;
+    }
+
+  this->CameraNode->RotateTo(
+    inverse ? vtkMRMLCameraNode::Posterior : vtkMRMLCameraNode::Anterior);
+}
+
+//----------------------------------------------------------------------------
+void vtkThreeDViewInteractorStyle::RotateToRight(bool inverse)
+{
+  if (!this->CameraNode)
+    {
+    return;
+    }
+
+  this->CameraNode->RotateTo(
+    inverse ? vtkMRMLCameraNode::Right : vtkMRMLCameraNode::Left);
+}
+
+//----------------------------------------------------------------------------
+void vtkThreeDViewInteractorStyle::RotateToInferior(bool inverse)
+{
+  if (!this->CameraNode)
+    {
+    return;
+    }
+
+  this->CameraNode->RotateTo(
+    inverse ? vtkMRMLCameraNode::Inferior : vtkMRMLCameraNode::Superior);
+}
+
+//----------------------------------------------------------------------------
+void vtkThreeDViewInteractorStyle::
+ResetCamera(bool resetRotation, bool resetTranslation, bool resetDistance)
+{
+  if (!this->CameraNode)
+    {
+    return;
+    }
+
+  this->CameraNode->Reset(
+    resetRotation, resetTranslation, resetDistance,
+    this->Interactor->FindPokedRenderer(0,0));
 }
 
 //----------------------------------------------------------------------------
