@@ -321,14 +321,4 @@ private:
   void operator=(const vtkSlicerVolumeRenderingLogic&);               // Not implemented
 };
 
-//----------------------------------------------------------------------------
-void vtkSlicerVolumeRenderingLogic
-::UpdateDisplayNodeFromVolumeNode(vtkMRMLVolumeRenderingDisplayNode *paramNode,
-                                  vtkMRMLVolumeNode *volumeNode)
-{
-  vtkMRMLVolumePropertyNode *propNode = NULL;
-  vtkMRMLAnnotationROINode *roiNode = NULL;
-  this->UpdateDisplayNodeFromVolumeNode(paramNode, volumeNode, &propNode, &roiNode);
-}
-
 #endif

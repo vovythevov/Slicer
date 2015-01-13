@@ -973,6 +973,18 @@ void vtkSlicerVolumeRenderingLogic::UpdateDisplayNodeFromVolumeNode(
 }
 
 //----------------------------------------------------------------------------
+void vtkSlicerVolumeRenderingLogic
+::UpdateDisplayNodeFromVolumeNode(vtkMRMLVolumeRenderingDisplayNode *paramNode,
+                                  vtkMRMLVolumeNode *volumeNode)
+{
+  vtkMRMLVolumePropertyNode *propNode =
+    paramNode ? paramNode->GetVolumePropertyNode() : NULL;
+  vtkMRMLAnnotationROINode *roiNode =
+    paramNode ? paramNode->GetROINode() : NULL;
+  this->UpdateDisplayNodeFromVolumeNode(paramNode, volumeNode, &propNode, &roiNode);
+}
+
+//----------------------------------------------------------------------------
 vtkMRMLVolumePropertyNode* vtkSlicerVolumeRenderingLogic
 ::AddVolumePropertyFromFile (const char* filename)
 {
