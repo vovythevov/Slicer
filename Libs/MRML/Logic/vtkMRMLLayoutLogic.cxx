@@ -1388,51 +1388,16 @@ vtkMRMLNode* vtkMRMLLayoutLogic::CreateViewFromAttributes(const ViewAttributes& 
     const std::string& type = it->second;
     node->SetAttribute("ViewType", type.c_str());
     }
-  if (className == "vtkMRMLViewNode")
+  vtkMRMLAbstractViewNode* viewNode = vtkMRMLAbstractViewNode::SafeDownCast(node);
+  if (viewNode)
     {
-    vtkMRMLViewNode* viewNode = vtkMRMLViewNode::SafeDownCast(node);
     it = attributes.find(std::string("singletontag"));
     if (it != end)
       {
       const std::string& singletonTag = it->second;
       viewNode->SetLayoutName(singletonTag.c_str());
       }
-    std::string name = std::string("View");
-    name += std::string(viewNode->GetLayoutName());
-    node->SetName(name.c_str());
-    //node->SetName(this->GetMRMLScene()->GetUniqueNameByString("View"));
-    }
-  else if (className == "vtkMRMLChartViewNode")
-    {
-    vtkMRMLChartViewNode* chartViewNode = vtkMRMLChartViewNode::SafeDownCast(node);
-    it = attributes.find(std::string("singletontag"));
-    if (it != end)
-      {
-      const std::string& singletonTag = it->second;
-      chartViewNode->SetLayoutName(singletonTag.c_str());
-      }
-    std::string name = std::string(chartViewNode->GetLayoutName());
-    node->SetName(name.c_str());
-    }
-  else if (className == "vtkMRMLSliceNode")
-    {
-    vtkMRMLSliceNode* sliceNode = vtkMRMLSliceNode::SafeDownCast(node);
-    it = attributes.find(std::string("singletontag"));
-    if (it != end)
-      {
-      const std::string& singletonTag = it->second;
-      sliceNode->SetLayoutName(singletonTag.c_str());
-      }
-/*
-    it = attributes.find(std::string("type"));
-    if (it != end)
-      {
-      const std::string& orientation = it->second;
-      sliceNode->SetOrientation(orientation.c_str());
-      }
-*/
-    std::string name = std::string(sliceNode->GetLayoutName());// + std::string(sliceNode->GetOrientationString());
-    node->SetName(name.c_str());
+    viewNode->SetName(viewNode->GetLayoutName());
     }
   return node;
 }
@@ -1652,11 +1617,7 @@ vtkCollection* vtkMRMLLayoutLogic::GetViewsFromAttributes(const ViewAttributes& 
       }
     else if (attributeName == "type")
       {
-      if (className == "vtkMRMLSliceNode")
-        {
-        continue;
-        }
-      if (className == "vtkMRMLChartViewNode")
+      if (className != "vtkMRMLViewNode")
         {
         continue;
         }
