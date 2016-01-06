@@ -2,6 +2,7 @@
 include(SlicerMacroBuildScriptedModule)
 
 set(modules
+  CLIPipelineModule
   DataProbe
   Editor
   EditorLib
