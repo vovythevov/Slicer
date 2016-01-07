@@ -26,11 +26,12 @@ class CLIPipeline(VTKObservationMixin):
     self.CLI = slicer.vtkMRMLCommandLineModuleNode()
     self.StatusModifiedEvent = slicer.vtkMRMLCommandLineModuleNode().StatusModifiedEvent
     self.OnNodeStatusChangedCallback = None
+    self.PipelineNodeModifiedCallback = None
 
     self._CurrentRunningStep = 0
     self._waitForCompletion = False
-    self._intermediateNodes= {}
-    self._intermediateNodeConnections = {}
+    self._IntermediateNodes= {}
+    self._IntermediateNodeConnections = {}
 
   def addStep(self, cliModule, params=[]):
     node = CLIPipelineNode()
@@ -56,7 +57,6 @@ class CLIPipeline(VTKObservationMixin):
       return
 
     self._waitForCompletion = wait_for_completion
-    self._intermediateNodeConnections = {}
     self.addObserver(self.Nodes[0].CLI, self.StatusModifiedEvent, self.onFirstNodeModified)
     self.addObserver(self.Nodes[-1].CLI, self.StatusModifiedEvent, self.onLastNodeModified)
 
@@ -66,7 +66,7 @@ class CLIPipeline(VTKObservationMixin):
   def _onPipelineEnd(self, lastExecutingNode):
     self.removeObserver(lastExecutingNode, self.StatusModifiedEvent, self.onNthNodeModified)
     self.removeObserver(self.Nodes[-1].CLI, self.StatusModifiedEvent, self.onLastNodeModified)
-    self._removeAllIntermediateNodes()
+    #self._removeAllIntermediateNodes()
 
   def onFirstNodeModified(self, cliNode, event):
     print('FIRST node modified - %s' %cliNode.GetStatusString())
@@ -86,6 +86,10 @@ class CLIPipeline(VTKObservationMixin):
 
   def onNthNodeModified(self, cliNode, event):
     status = cliNode.GetStatus()
+
+    if self.PipelineNodeModifiedCallback:
+      self.PipelineNodeModifiedCallback(self._CurrentRunningStep, cliNode, event)
+
     if self.OnNodeStatusChangedCallback:
       self.OnNodeStatusChangedCallback(self._CurrentRunningStep, status)
 
@@ -93,20 +97,28 @@ class CLIPipeline(VTKObservationMixin):
         or status == cliNode.CompletedWithErrors):
       self.CLI.SetStatus(status)
 
+    print('NTH %s - %s' %(self._CurrentRunningStep, cliNode.GetStatusString()))
+
     if status == cliNode.Cancelled or status == cliNode.CompletedWithErrors:
       self._PipelineEnd(cliNode)
+    elif status == cliNode.Running:
+      # Delete the intermediate nodes used as input for this step after it
+      # started running
+      self._deleteIntermediateNodes(self._CurrentRunningStep)
     elif status == cliNode.Completed:
       self.removeObserver(cliNode, self.StatusModifiedEvent, self.onNthNodeModified)
 
       if self._CurrentRunningStep < len(self.Nodes) - 1:
         self._CurrentRunningStep = self._CurrentRunningStep + 1
         self.runNode(self._CurrentRunningStep)
-        self._deleteIntermediateNodes(self._CurrentRunningStep)
 
   def runNode(self, step):
     print('Running node #%s' %step)
     pipelineNode = self.node(step)
     self.createIntermediateNodes(step)
+
+    print pipelineNode.Parameters
+
     self.addObserver(pipelineNode.CLI, self.StatusModifiedEvent, self.onNthNodeModified)
     cliNode = slicer.cli.run(pipelineNode.CLIModule, pipelineNode.CLI, pipelineNode.Parameters, self._waitForCompletion)
 
@@ -117,50 +129,62 @@ class CLIPipeline(VTKObservationMixin):
   def addIntermediateNode(self, stepFrom, paramNameFrom, stepTo, paramNameTo, nodeClass):
     pNodeFrom = self.node(stepFrom)
     pNodeTo = self.node(stepTo)
+
     if not pNodeFrom or not pNodeTo:
       return None
 
-    if (not paramNameFrom in pNodeFrom.Parameters
-        or not paramNameTo in pNodeTo.Parameters):
-      return None
+    pNodeFrom.Parameters[paramNameFrom] = ''
 
     key = (stepFrom, paramNameFrom)
-    self._intermediateNodes[key] = nodeClass
+    self._IntermediateNodes[key] = [nodeClass, None]
 
-    if not self._intermediateNodeConnections.has_key(key):
-      self._intermediateNodeConnections[key] = []
-    self._intermediateNodeConnections[key].append( (stepTo, paramNameTo) )
+    if not self._IntermediateNodeConnections.has_key(key):
+      self._IntermediateNodeConnections[key] = []
+    self._IntermediateNodeConnections[key].append( (stepTo, paramNameTo) )
+
+    print self._IntermediateNodeConnections
 
   def createIntermediateNodes(self, step):
     pipelineNode = self.node(step)
 
     for key in pipelineNode.Parameters:
       connection = (step, key)
-      if connection in self._intermediateNodes: # Check if we need to create the node
-        intermediateNode = slicer.mrmlScene.AddNode( self._intermediateNodes[connection]() )
+      if connection in self._IntermediateNodes: # Check if we need to create the node
+        intermediateNode = slicer.mrmlScene.AddNode( self._IntermediateNodes[connection][0]() )
         intermediateNode.HideFromEditorsOn()
-        self._intermediateNodes[connection] = intermediateNode
+        self._IntermediateNodes[connection][1] = intermediateNode
+        pipelineNode.Parameters[key] = intermediateNode
 
-        for (s, p) in self._intermediateNodeConnections.iteritems():
+        for (s, p) in self._IntermediateNodeConnections[connection]:
           n = self.node(s)
           n.Parameters[p] = intermediateNode
+          print('Parameters for step #%s' %s)
+          print(n.Parameters)
 
   def _deleteIntermediateNodes(self, runningStep):
-    for (step, param) in self._intermediateNodeConnections:
+    for (step, param) in self._IntermediateNodeConnections:
       canDelete = True
-      for (s, p) in self._intermediateNodeConnections[step, param]:
+      for (s, p) in self._IntermediateNodeConnections[step, param]:
         if s < runningStep:
           canDelete = False
 
       if canDelete:
-        intermediateNode = self._intermediateNodes[(step, param)]
-        if type(intermediateNode) is not type(slicer.vtkMRMLNode):
-          slicer.mrmlScene.RemoveNode(intermediateNode)
+        key = (step, param)
+        intermediateNode = self._IntermediateNodes[key][1]
+
+        print(intermediateNode.GetName())
+        slicer.mrmlScene.RemoveNode(intermediateNode)
+        self._IntermediateNodes[key][1] = None
 
   def _removeAllIntermediateNodes(self):
-    for key, value in self._intermediateNodes.iteritems():
-      if type(value) is not type(slicer.vtkMRMLNode):
-        slicer.mrmlScene.RemoveNode(value)
+    for key, value in self._IntermediateNodes.iteritems():
+        slicer.mrmlScene.RemoveNode(value[1])
+        self._IntermediateNodes[key][1] = None
+
+  def cancel(self):
+    if self.CLI.IsBusy():
+      pipelineNode = self.Nodes[self._CurrentRunningStep]
+      pipelineNode.CLI.Cancel()
 
 #
 # CLIPipelineModule
@@ -202,6 +226,7 @@ class CLIPipelineModuleWidget:
        ( 'Two CLIs test - async', self.twoCLIsTestAsynchronous ),
        ( 'Two CLIs piped together test - wait_for_completion', self.twoCLIsPipedTogetherTestWaitForCompletion ),
        ( 'Two CLIs piped together test - async', self.twoCLIsPipedTogetherTestAsynchronous ),
+       ( 'Cancel test', self.cancelTest ),
       )
 
     for test in self.Tests:
@@ -329,6 +354,7 @@ class CLIPipelineModuleWidget:
     # Output
     outputNode = slicer.vtkMRMLScalarVolumeNode()
     slicer.mrmlScene.AddNode(outputNode)
+    outputNode.SetName('Output')
 
     # Get number of scalar volume node before running the pipeling
     beforeCollection = slicer.mrmlScene.GetNodesByClass('vtkMRMLScalarVolumeNode')
@@ -339,12 +365,13 @@ class CLIPipelineModuleWidget:
     firstCLIParams["ThresholdValue"] = 100
     pipeline.setStepParameters(0, firstCLIParams)
 
-    secondCLIParams = firstCLIParams
-    firstCLIParams["OutputVolume"] = outputNode
-    firstCLIParams["ThresholdValue"] = 100
+    secondCLIParams = {}
+    secondCLIParams["OutputVolume"] = outputNode
+    secondCLIParams["ThresholdValue"] = 100
     pipeline.setStepParameters(1, secondCLIParams)
 
     # Handle intermediate parameter
+    print('Add intermediate node')
     pipeline.addIntermediateNode(0, 'OutputVolume', 1, 'InputVolume', slicer.vtkMRMLScalarVolumeNode)
 
     pipeline.run(wait_for_completion)
@@ -355,6 +382,61 @@ class CLIPipelineModuleWidget:
 
     if not pipeline.CLI.GetStatusString() == 'Completed':
       slicer.testing.exitFailure('Pipeline did not work !')
+
+    # Compare beforeCollection and after collection
+    afterCollection = slicer.mrmlScene.GetNodesByClass('vtkMRMLScalarVolumeNode')
+    afterCollection.UnRegister(afterCollection)
+
+    if beforeCollection.GetNumberOfItems() != afterCollection.GetNumberOfItems():
+      slicer.testing.exitFailure('Pipeline left some volumes around !')
+
+    slicer.util.delayDisplay('Test succeeded !')
+
+  # Cancel test
+  def cancelTest(self):
+    mrHead = self.loadMRHead()
+
+    pipeline = CLIPipeline()
+    pipeline.addStep(slicer.modules.thresholdscalarvolume)
+    pipeline.addStep(slicer.modules.thresholdscalarvolume)
+    pipeline.addStep(slicer.modules.thresholdscalarvolume)
+
+    # Output
+    outputNode = slicer.vtkMRMLScalarVolumeNode()
+    slicer.mrmlScene.AddNode(outputNode)
+
+    # Get number of scalar volume node before running the pipeling
+    beforeCollection = slicer.mrmlScene.GetNodesByClass('vtkMRMLScalarVolumeNode')
+    beforeCollection.UnRegister(beforeCollection)
+
+    firstCLIParams = {}
+    firstCLIParams["InputVolume"] = mrHead.GetID()
+    firstCLIParams["ThresholdValue"] = 100
+    pipeline.setStepParameters(0, firstCLIParams)
+
+    secondCLIParams = {}
+    secondCLIParams["ThresholdValue"] = 10
+    pipeline.setStepParameters(1, secondCLIParams)
+
+    thirdCLIParams = {}
+    thirdCLIParams["OutputVolume"] = outputNode
+    thirdCLIParams["ThresholdValue"] = 120
+    pipeline.setStepParameters(2, thirdCLIParams)
+
+    # Handle intermediate parameter
+    pipeline.addIntermediateNode(0, 'OutputVolume', 1, 'InputVolume', slicer.vtkMRMLScalarVolumeNode)
+    pipeline.addIntermediateNode(1, 'OutputVolume', 2, 'InputVolume', slicer.vtkMRMLScalarVolumeNode)
+
+    def onCancelTestPipeline(step, cliNode, event):
+      if step == 2:
+        cliNode.Cancel()
+
+    #pipeline.PipelineNodeModifiedCallback = onCancelTestPipeline
+    pipeline.run(False)
+
+    while pipeline.CLI.GetStatusString() != 'Completed':
+      slicer.util.delayDisplay('Waiting for simple test completion...')
+
 
     # Compare beforeCollection and after collection
     afterCollection = slicer.mrmlScene.GetNodesByClass('vtkMRMLScalarVolumeNode')
