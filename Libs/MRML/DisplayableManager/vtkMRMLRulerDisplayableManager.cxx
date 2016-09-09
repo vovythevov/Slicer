@@ -261,6 +261,11 @@ void vtkMRMLRulerDisplayableManager::vtkInternal::UpdateRuler()
     viewWidthPixel = sliceNode->GetDimensions()[0];
     viewHeightPixel = sliceNode->GetDimensions()[1];
 
+    // We want to know the scaling factor between the pixels X length and mm.
+    // The norm of the vector of the first column of XY->RAS matrix gives us
+    // the mm/pixel factor.
+    // To get the pixel/mm factor, we can use the norm of the *ROW* vector
+    // of the RAS->XY matrix.
     vtkNew<vtkMatrix4x4> rasToXY;
     vtkMatrix4x4::Invert(sliceNode->GetXYToRAS(), rasToXY.GetPointer());
 
