@@ -92,6 +92,12 @@ if((NOT DEFINED VTK_DIR OR NOT DEFINED VTK_SOURCE_DIR) AND NOT ${CMAKE_PROJECT_N
       )
   endif()
 
+  foreach(module ${Slicer_VTK_Modules})
+    list(APPEND EXTERNAL_PROJECT_OPTIONAL_ARGS
+      -DModule_${module}:BOOL=ON
+      )
+  endforeach()
+
   # Enable VTK_ENABLE_KITS only if CMake >= 3.0 is used
   set(VTK_ENABLE_KITS 0)
   if(CMAKE_MAJOR_VERSION EQUAL 3)

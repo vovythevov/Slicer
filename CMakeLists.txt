@@ -563,6 +563,9 @@ if(UNIX AND NOT APPLE)
     endif()
   endif()
 endif()
+set(Slicer_VTK_Modules "" CACHE STRING
+  "List of vtk module to enable for Slicer. Example: vtkDicom;vtkDomainsMicroscopy;")
+mark_as_superbuild(Slicer_VTK_Modules)
 
 #-----------------------------------------------------------------------------
 # Qt - Slicer_REQUIRED_QT_MODULES
