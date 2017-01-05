@@ -104,8 +104,8 @@ if((NOT DEFINED VTK_DIR OR NOT DEFINED VTK_SOURCE_DIR) AND NOT ${CMAKE_PROJECT_N
     set(VTK_ENABLE_KITS 1)
   endif()
 
-  set(${CMAKE_PROJECT_NAME}_${proj}_GIT_REPOSITORY "github.com/Slicer/VTK.git" CACHE STRING "Repository from which to get VTK" FORCE)
-  set(${CMAKE_PROJECT_NAME}_${proj}_GIT_TAG "0f8ed32e0b7018d776271dbf5f27968b716a9e10" CACHE STRING "VTK git tag to use" FORCE)
+  set(${CMAKE_PROJECT_NAME}_${proj}_GIT_REPOSITORY "github.com/vovythevov/VTK.git" CACHE STRING "Repository from which to get VTK" FORCE)
+  set(${CMAKE_PROJECT_NAME}_${proj}_GIT_TAG "2b5abcd01a82059631570ea5e784a4cb62662cca" CACHE STRING "VTK git tag to use" FORCE)
 
   mark_as_advanced(${CMAKE_PROJECT_NAME}_${proj}_GIT_REPOSITORY ${CMAKE_PROJECT_NAME}_${proj}_GIT_TAG)
 
