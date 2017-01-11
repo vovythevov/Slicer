@@ -120,6 +120,7 @@ void qMRMLTransformDisplayNodeWidgetPrivate
   QObject::connect(this->GlyphToggle, SIGNAL(toggled(bool)), q, SLOT(setGlyphVisualizationMode(bool)));
   QObject::connect(this->GridToggle, SIGNAL(toggled(bool)), q, SLOT(setGridVisualizationMode(bool)));
   QObject::connect(this->ContourToggle, SIGNAL(toggled(bool)), q, SLOT(setContourVisualizationMode(bool)));
+  QObject::connect(this->InteractiveToggle, SIGNAL(toggled(bool)), q, SLOT(setInteractiveVisualizationMode(bool)));
 
   // Glyph Parameters
   QObject::connect(this->GlyphPointsNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)), q, SLOT(glyphPointsNodeChanged(vtkMRMLNode*)));
@@ -213,11 +214,12 @@ void qMRMLTransformDisplayNodeWidget
   d->Visible3dCheckBox->setChecked(d->TransformDisplayNode->GetVisibility());
 
   switch (d->TransformDisplayNode->GetVisualizationMode())
-   {
+    {
     case vtkMRMLTransformDisplayNode::VIS_MODE_GLYPH: d->GlyphToggle->setChecked(true); break;
     case vtkMRMLTransformDisplayNode::VIS_MODE_GRID: d->GridToggle->setChecked(true); break;
     case vtkMRMLTransformDisplayNode::VIS_MODE_CONTOUR: d->ContourToggle->setChecked(true); break;
-   }
+    case vtkMRMLTransformDisplayNode::VIS_MODE_INTERACTIVE: d->InteractiveToggle->setChecked(true); break;
+    }
 
   d->RegionNodeComboBox->setCurrentNode(d->TransformDisplayNode->GetRegionNode());
 
@@ -549,6 +551,19 @@ void qMRMLTransformDisplayNodeWidget::setContourVisualizationMode(bool activate)
     return;
     }
   d->TransformDisplayNode->SetVisualizationMode(vtkMRMLTransformDisplayNode::VIS_MODE_CONTOUR);
+}
+
+//-----------------------------------------------------------------------------
+void qMRMLTransformDisplayNodeWidget
+::setInteractiveVisualizationMode(bool activate)
+{
+  Q_D(qMRMLTransformDisplayNodeWidget);
+  if (!activate || !d->TransformDisplayNode)
+    {
+    return;
+    }
+  d->TransformDisplayNode->SetVisualizationMode(
+    vtkMRMLTransformDisplayNode::VIS_MODE_INTERACTIVE);
 }
 
 //-----------------------------------------------------------------------------
