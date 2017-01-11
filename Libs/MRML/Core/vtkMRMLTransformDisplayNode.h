@@ -49,6 +49,7 @@ class VTK_MRML_EXPORT vtkMRMLTransformDisplayNode : public vtkMRMLDisplayNode
     VIS_MODE_GLYPH,
     VIS_MODE_GRID,
     VIS_MODE_CONTOUR,
+    VIS_MODE_INTERACTIVE,
     VIS_MODE_LAST // this should be the last mode
     };
 

@@ -63,6 +63,8 @@ protected:
   /// Initialize the displayable manager
   virtual void Create();
 
+  virtual void ProcessWidgetsEvents(vtkObject* caller, unsigned long event, void* callData);
+
 private:
 
   vtkMRMLTransformsDisplayableManager3D(const vtkMRMLTransformsDisplayableManager3D&); // Not implemented
