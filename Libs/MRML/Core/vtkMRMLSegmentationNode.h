@@ -76,7 +76,12 @@ public:
   virtual const char* GetNodeTagName() {return "Segmentation";};
 
   /// Get bounding box in global RAS in the form (xmin,xmax, ymin,ymax, zmin,zmax).
-  virtual void GetRASBounds(double bounds[6]);
+  /// By default, this method retuns the bounds of the object with any transforms
+  /// that may be applied to it.
+  /// Otherwise, if useTransform is false, the returned bounds are untransformed.
+  /// The boolean return value denotes whether the bounds of node are valid.
+  /// For segmentation nodes, useTransform = false is unsupported.
+  virtual bool GetRASBounds(double bounds[6], bool useTransform=true);
 
   /// Returns true if the transformable node can apply non linear transforms
   /// \sa ApplyTransform

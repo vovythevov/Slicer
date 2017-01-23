@@ -153,7 +153,12 @@ public:
   /// Get bounding box in global RAS the form (xmin,xmax, ymin,ymax, zmin,zmax).
   /// The deafult implementation in the model node would not work correctly, as the polydata
   /// in this class is used for storing the centerpoint position and radius.
-  virtual void GetRASBounds(double bounds[6]);
+  ///
+  /// By default, this method retuns the bounds of the object with any transforms
+  /// that may be applied to it.
+  /// Otherwise, if useTransform is false, the returned bounds are untransformed.
+  /// The boolean return value denotes whether the bounds of node are valid.
+  virtual bool GetRASBounds(double bounds[6], bool useTransform=true);
 
   enum
   {

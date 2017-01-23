@@ -33,6 +33,7 @@ or http://www.slicer.org/copyright/copyright.txt for details.
 #include <vtkAppendPolyData.h>
 #include <vtkCollection.h>
 #include <vtkArrowSource.h>
+#include <vtkBoundingBox.h>
 #include <vtkConeSource.h>
 #include <vtkContourFilter.h>
 #include <vtkCellArray.h>
@@ -1497,6 +1498,27 @@ void vtkSlicerTransformLogic::GetTransformedNodes(
         {
         vtkSlicerTransformLogic::GetTransformedNodes(
           scene, childTransformNode, transformedNodes, recursive);
+        }
       }
     }
+}
+
+//----------------------------------------------------------------------------
+bool vtkSlicerTransformLogic::GetNodesRASBounds(
+  const std::vector<vtkMRMLDisplayableNode*>& nodes,
+  double bounds[6],
+  bool useTransform)
+{
+  vtkBoundingBox box;
+  for (size_t i = 0; i < nodes.size(); ++i)
+    {
+    double nodeBounds[6];
+    bool boundsValid = nodes[i]->GetRASBounds(nodeBounds, useTransform);
+    if (boundsValid)
+      {
+      box.AddBounds(nodeBounds);
+      }
+    }
+  box.GetBounds(bounds);
+  return box.IsValid();
 }

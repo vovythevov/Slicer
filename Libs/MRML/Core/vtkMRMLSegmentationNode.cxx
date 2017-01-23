@@ -453,15 +453,22 @@ bool vtkMRMLSegmentationNode::CanApplyNonLinearTransforms() const
 //---------------------------------------------------------------------------
 // Global RAS in the form (Xmin, Xmax, Ymin, Ymax, Zmin, Zmax)
 //---------------------------------------------------------------------------
-void vtkMRMLSegmentationNode::GetRASBounds(double bounds[6])
+bool vtkMRMLSegmentationNode
+::GetRASBounds(double bounds[6], bool useTransform)
 {
   vtkOrientedImageData::UninitializeBounds(bounds);
   if (this->Segmentation)
     {
     this->Segmentation->GetBounds(bounds);
     }
+  if (!useTransform)
+    {
+    vtkWarningMacro("Unsupported option \"useTransform=false\" for "
+      << this->GetClassName());
+    return false;
+    }
+  return true;
 }
-
 
 //---------------------------------------------------------------------------
 bool vtkMRMLSegmentationNode::GenerateMergedLabelmap(

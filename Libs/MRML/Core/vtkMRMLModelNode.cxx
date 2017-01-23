@@ -581,21 +581,22 @@ void vtkMRMLModelNode::ApplyTransform(vtkAbstractTransform* transform)
 }
 
 //---------------------------------------------------------------------------
-void vtkMRMLModelNode::GetRASBounds(double bounds[6])
+bool vtkMRMLModelNode::GetRASBounds(double bounds[6], bool useTransform)
 {
-  this->Superclass::GetRASBounds( bounds);
+  this->Superclass::GetRASBounds( bounds, useTransform);
 
   if (this->GetPolyData() == NULL)
     {
-    return;
+    return false;
     }
 
   this->GetPolyData()->ComputeBounds();
-
-  double boundsLocal[6];
-  this->GetPolyData()->GetBounds(boundsLocal);
-
-  this->TransformBoundsToRAS(boundsLocal, bounds);
+  this->GetPolyData()->GetBounds(bounds);
+  if (useTransform)
+    {
+    this->TransformBoundsToRAS(bounds, bounds);
+    }
+  return true;
 }
 
 //---------------------------------------------------------------------------

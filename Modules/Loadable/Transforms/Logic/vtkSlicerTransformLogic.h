@@ -139,6 +139,14 @@ class VTK_SLICER_TRANSFORMS_MODULE_LOGIC_EXPORT vtkSlicerTransformLogic : public
     std::vector<vtkMRMLDisplayableNode*>& transformedNodes,
     bool recursive=true);
 
+  /// Return the RAS bounding box around the list of given nodes.
+  /// Only the nodes with a valid bounding box are taken into account.
+  /// The return boolean denotes whether the returned bounding box is valid.
+  static bool GetNodesRASBounds(
+    const std::vector<vtkMRMLDisplayableNode*>& nodes,
+    double bounds[6],
+    bool useTransform=true);
+
   enum TransformKind
   {
     TRANSFORM_OTHER,
