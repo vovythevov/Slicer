@@ -117,7 +117,18 @@ void vtkMRMLTransformableNode::SetAndObserveTransformNodeID(const char *transfor
     transformNodeID = 0;
     }
 
+  vtkMRMLTransformNode* previousNode = this->GetParentTransformNode();
   this->SetAndObserveNodeReferenceID(this->GetTransformNodeReferenceRole(), transformNodeID);
+  if (tnode)
+    {
+    tnode->InvokeEvent(
+      vtkMRMLTransformNode::TransformReferenceAddedEvent, this);
+    }
+  else if (previousNode)
+    {
+    previousNode->InvokeEvent(
+      vtkMRMLTransformNode::TransformReferenceRemovedEvent, this);
+    }
 }
 
 

@@ -62,10 +62,10 @@ public:
                                   unsigned long /*event*/,
                                   void * /*callData*/ );
 
-  /// TransformModifiedEvent is send when the parent transform is modidied
+  /// TransformModifiedEvent is send when the parent transform is modified
   enum
     {
-      TransformModifiedEvent = 15000
+    TransformModifiedEvent = 15000,
     };
 
   /// Returns true if the transformable node can apply non-linear transforms.
