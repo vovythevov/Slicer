@@ -62,10 +62,10 @@ public:
                                   unsigned long /*event*/,
                                   void * /*callData*/ );
 
-  /// TransformModifiedEvent is send when the parent transform is modidied
+  /// TransformModifiedEvent is sent when the parent transform is modified
   enum
     {
-      TransformModifiedEvent = 15000
+    TransformModifiedEvent = 15000,
     };
 
   /// Returns true if the transformable node can apply non-linear transforms.
@@ -119,14 +119,7 @@ protected:
 
   ///
   /// Called when a node reference ID is added (list size increased).
-  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference)
-  {
-    Superclass::OnNodeReferenceAdded(reference);
-    if (std::string(reference->GetReferenceRole()) == this->TransformNodeReferenceRole)
-      {
-      this->InvokeCustomModifiedEvent(vtkMRMLTransformableNode::TransformModifiedEvent, reference->GetReferencedNode());
-      }
-  }
+  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference);
 
   ///
   /// Called when a node reference ID is modified.
@@ -141,15 +134,7 @@ protected:
 
   ///
   /// Called after a node reference ID is removed (list size decreased).
-  virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference)
-  {
-    Superclass::OnNodeReferenceRemoved(reference);
-    if (std::string(reference->GetReferenceRole()) == this->TransformNodeReferenceRole)
-    {
-      this->InvokeCustomModifiedEvent(vtkMRMLTransformableNode::TransformModifiedEvent, reference->GetReferencedNode());
-    }
-  }
-
+  virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference);
 
 private:
   char* TransformNodeIDInternal;

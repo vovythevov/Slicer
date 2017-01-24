@@ -277,6 +277,18 @@ public:
   virtual bool GetModifiedSinceRead();
 
   ///
+  /// Event called on the transform node:
+  ///  - TransformReferenceModifiedEvent:
+  /// Called whenever a vtkMRMLTransformableNode beigns or stops from observing
+  /// a transform.
+  /// For example: volume->SetAndObserveTransformNodeID(transform->GetID());
+  /// \sa vtkMRMLTransformableNode
+  enum
+    {
+    TransformReferenceModifiedEvent = 25000,
+    };
+
+  ///
   /// Retrieves the transform as the specified transform class.
   /// If modifiableOnly is set to true then NULL will be returned for transforms that cannot be modified (e.g., because it is computed from its inverse).
   /// Returns NULL if the transform is not a kind of transform that was requested.
