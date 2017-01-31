@@ -1036,11 +1036,27 @@
      </item>
      <item>
       <widget class="QPushButton" name="InteractiveToggle">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>60</height>
+        </size>
+       </property>
        <property name="toolTip">
-        <string>Change the transform by interaction.</string>
+        <string>Change the transform by interaction. Only linear transforms are supported.</string>
        </property>
        <property name="text">
         <string>Interactive</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../qSlicerTransformsModuleWidgets.qrc">
+         <normaloff>:/Icons/MousePointer.png</normaloff>:/Icons/MousePointer.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
        </property>
        <property name="checkable">
         <bool>true</bool>
