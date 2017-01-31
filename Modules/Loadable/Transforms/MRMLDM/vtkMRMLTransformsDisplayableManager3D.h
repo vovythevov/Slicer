@@ -28,6 +28,10 @@
 
 #include "vtkSlicerTransformsModuleMRMLDisplayableManagerExport.h"
 
+class vtkAbstractWidget;
+class vtkMRMLTransformDisplayNode;
+
+
 /// \brief Display transforms in 3D views
 ///
 /// Displays transforms in 3D viewers as glyphs, deformed grid, or
@@ -41,6 +45,11 @@ public:
   static vtkMRMLTransformsDisplayableManager3D* New();
   vtkTypeMacro(vtkMRMLTransformsDisplayableManager3D,vtkMRMLAbstractThreeDViewDisplayableManager);
   void PrintSelf(ostream& os, vtkIndent indent);
+
+  /// \internal
+  /// For testing purposes only:
+  /// Return the widget associated with the given transform, if any.
+  vtkAbstractWidget* GetWidget(vtkMRMLTransformDisplayNode* displayNode);
 
 protected:
 
