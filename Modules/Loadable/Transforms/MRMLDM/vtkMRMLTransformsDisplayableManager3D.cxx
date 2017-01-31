@@ -407,15 +407,13 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal
     }
 
   vtkNew<vtkMatrix4x4> toWorldMatrix;
-  int isLinear  = transformNode->GetMatrixTransformToWorld(toWorldMatrix.GetPointer());
+  transformNode->GetMatrixTransformToWorld(toWorldMatrix.GetPointer());
   vtkNew<vtkTransform> widgetTransform;
   widgetTransform->Concatenate(toWorldMatrix.GetPointer());
   widgetTransform->Concatenate(pipeline->WidgetDisplayTransform);
 
-  // GetLineRepresentation() doesn't make sense but it is what it is.
   vtkBoxRepresentation* representation =
-    vtkBoxRepresentation::SafeDownCast(
-      pipeline->Widget->GetRepresentation());
+    vtkBoxRepresentation::SafeDownCast(pipeline->Widget->GetRepresentation());
 
   representation->SetTransform(widgetTransform.GetPointer());
 }
@@ -431,7 +429,6 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal
   Pipeline* pipeline = this->DisplayPipelines[displayNode];
   assert(displayNode);
 
-  // GetLineRepresentation() doesn't make sense but it is what it is.
   vtkBoxRepresentation* representation =
     vtkBoxRepresentation::SafeDownCast(widget->GetRepresentation());
 
@@ -489,7 +486,6 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::UpdateDisplayNodePipeli
   bool visible = this->IsVisible(displayNode);
   bool actorVisible = interactive ? false : visible;
   pipeline->Actor->SetVisibility(actorVisible);
-  this->SetWidgetVisible(pipeline, interactive);
 
   if (!visible)
     {
@@ -516,6 +512,15 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::UpdateDisplayNodePipeli
     }
   else
     {
+    if (!transformNode->IsLinear())
+      {
+      vtkWarningWithObjectMacro(
+        transformNode,
+        "Cannot show interactive widget: Transform is not linear");
+      return;
+      }
+
+    this->SetWidgetVisible(pipeline, interactive);
     this->UpdateWidgetFromNode(displayNode, transformNode, pipeline);
     }
 }
