@@ -43,6 +43,7 @@
 #include <vtkDataSetAttributes.h>
 #include <vtkGeneralTransform.h>
 #include <vtkLookupTable.h>
+#include <vtkLineSource.h>
 #include <vtkMatrix4x4.h>
 #include <vtkNew.h>
 #include <vtkObjectFactory.h>
@@ -53,6 +54,8 @@
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkTransform.h>
+
+const double DEFAULT_SCALE[3] = {100.0, 100.0, 100.0};
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro ( vtkMRMLTransformsDisplayableManager3D );
@@ -71,9 +74,11 @@ public:
     vtkSmartPointer<vtkPolyData> InputPolyData;
 
     vtkSmartPointer<vtkBoxWidget2> Widget;
+    vtkSmartPointer<vtkTransform> WidgetDisplayTransform;
+    size_t NumberOfTransformedNodes;
     };
 
-  typedef std::map < vtkMRMLTransformDisplayNode*, const Pipeline* > PipelinesCacheType;
+  typedef std::map < vtkMRMLTransformDisplayNode*, Pipeline* > PipelinesCacheType;
   PipelinesCacheType DisplayPipelines;
 
   typedef std::map < vtkMRMLTransformNode*, std::set< vtkMRMLTransformDisplayNode* > > TransformToDisplayCacheType;
@@ -90,12 +95,15 @@ public:
   // Display Nodes
   void AddDisplayNode(vtkMRMLTransformNode*, vtkMRMLTransformDisplayNode*);
   void UpdateDisplayNode(vtkMRMLTransformDisplayNode* displayNode);
-  void UpdateDisplayNodePipeline(vtkMRMLTransformDisplayNode*, const Pipeline*);
+  void UpdateDisplayNodePipeline(vtkMRMLTransformDisplayNode*, Pipeline*);
   void RemoveDisplayNode(vtkMRMLTransformDisplayNode* displayNode);
   void SetTransformDisplayProperty(vtkMRMLTransformDisplayNode *displayNode, vtkActor* actor);
 
   // Widget
-  void UpdateWidgetFromNode(vtkMRMLTransformDisplayNode*, vtkMRMLTransformNode*, const Pipeline*);
+  void SetWidgetVisible(Pipeline*, bool);
+  void UpdateWidgetDisplayTransform(
+    Pipeline*, vtkMRMLTransformNode*, const std::vector<vtkMRMLDisplayableNode*>&);
+  void UpdateWidgetFromNode(vtkMRMLTransformDisplayNode*, vtkMRMLTransformNode*, Pipeline*);
   void UpdateNodeFromWidget(vtkBoxWidget2*);
 
   // Observations
@@ -241,7 +249,7 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::RemoveDisplayNode(vtkMR
     {
     return;
     }
-  const Pipeline* pipeline = actorsIt->second;
+  Pipeline* pipeline = actorsIt->second;
   this->WidgetMap.erase(pipeline->Widget);
   this->External->GetRenderer()->RemoveActor(pipeline->Actor);
   delete pipeline;
@@ -270,6 +278,7 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::AddDisplayNode(vtkMRMLT
   // Create pipeline
   Pipeline* pipeline = new Pipeline();
 
+  // Visualization VTK
   pipeline->Actor = vtkSmartPointer<vtkActor>::New();
   vtkNew<vtkPolyDataMapper> mapper;
   pipeline->Actor->SetMapper(mapper.GetPointer());
@@ -277,18 +286,25 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::AddDisplayNode(vtkMRMLT
   pipeline->InputPolyData = vtkSmartPointer<vtkPolyData>::New();
   mapper->SetInputData(pipeline->InputPolyData);
 
-  pipeline->Widget = vtkSmartPointer<vtkBoxWidget2>::New();
-  vtkNew<vtkBoxRepresentation> WidgetRep;
-  pipeline->Widget->SetRepresentation(WidgetRep.GetPointer());
-  pipeline->Widget->SetInteractor(this->External->GetInteractor());
-  pipeline->Widget->SetCurrentRenderer(this->External->GetRenderer());
-
-  pipeline->Widget->AddObserver(
-    vtkCommand::InteractionEvent, this->External->GetWidgetsCallbackCommand());
-
   // Add actor to Renderer and local cache
   this->External->GetRenderer()->AddActor( pipeline->Actor );
   this->DisplayPipelines.insert( std::make_pair(displayNode, pipeline) );
+
+  // Interaction VTK
+  //  - Widget
+  pipeline->Widget = vtkSmartPointer<vtkBoxWidget2>::New();
+  vtkNew<vtkBoxRepresentation> WidgetRep;
+  pipeline->Widget->SetRepresentation(WidgetRep.GetPointer());
+  //  - Transform
+  pipeline->WidgetDisplayTransform = vtkSmartPointer<vtkTransform>::New();
+  pipeline->NumberOfTransformedNodes = -1;
+  // - Widget events
+  pipeline->Widget->AddObserver(
+    vtkCommand::InteractionEvent, this->External->GetWidgetsCallbackCommand());
+
+  // Add actor / set renderers and cache
+  pipeline->Widget->SetInteractor(this->External->GetInteractor());
+  pipeline->Widget->SetCurrentRenderer(this->External->GetRenderer());
   this->WidgetMap.insert(std::make_pair(pipeline->Widget, mNode));
 
   // Update cached matrices. Calls UpdateDisplayNodePipeline
@@ -318,24 +334,90 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::UpdateDisplayNode(vtkMR
 }
 
 //---------------------------------------------------------------------------
+void vtkMRMLTransformsDisplayableManager3D::vtkInternal::
+SetWidgetVisible(Pipeline* pipeline, bool visible)
+{
+  assert(pipeline && pipeline->Widget);
+  pipeline->Widget->SetEnabled(visible);
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLTransformsDisplayableManager3D::vtkInternal
+::UpdateWidgetDisplayTransform(
+  Pipeline* pipeline, vtkMRMLTransformNode* transformNode,
+  const std::vector<vtkMRMLDisplayableNode*>& transformedNodes)
+{
+  // WidgetDisplayTransform is in charge of moving the widget around
+  // the bounding box of the objects under the transform, wherever they
+  // are.
+  assert(pipeline && transformNode);
+
+  bool validBounds = false;
+  double bounds[6];
+  if (transformedNodes.size() > 0)
+    {
+    validBounds =
+      vtkSlicerTransformLogic::GetNodesRASBounds(transformedNodes, bounds, false);
+    }
+
+  if (validBounds)
+    {
+    // Get the bounding box around the UNTRANSFORMED objects so we have
+    // the actual box around the object.
+    double center[3], scales[3];
+    for (int i = 0; i < 3; ++i)
+      {
+      double scale = 0.5*(bounds[2*i + 1] - bounds[2*i]);
+      center[i] = bounds[2*i] + scale;
+      scales[i] = 4*scale;
+      }
+
+    pipeline->WidgetDisplayTransform->Identity();
+    pipeline->WidgetDisplayTransform->Translate(center);
+    pipeline->WidgetDisplayTransform->Scale(scales);
+    }
+  else
+    {
+    // No objects, just add a default scaling so the widget can be interacted
+    // with more easily.
+    pipeline->WidgetDisplayTransform->Identity();
+    pipeline->WidgetDisplayTransform->Scale(DEFAULT_SCALE);
+    }
+}
+
+//---------------------------------------------------------------------------
 void vtkMRMLTransformsDisplayableManager3D::vtkInternal
 ::UpdateWidgetFromNode(vtkMRMLTransformDisplayNode* displayNode,
                        vtkMRMLTransformNode* transformNode,
-                       const Pipeline* pipeline)
+                       Pipeline* pipeline)
 {
   assert(displayNode && transformNode && pipeline);
+
+  // 1: Find all the nodes that are under the transformNode
+  std::vector<vtkMRMLDisplayableNode*> transformedNodes;
+  vtkSlicerTransformLogic::GetTransformedNodes(
+    this->External->GetMRMLScene(),
+    transformNode, transformedNodes, true);
+
+  size_t numberOfTransformedNodes = transformedNodes.size();
+  if (numberOfTransformedNodes != pipeline->NumberOfTransformedNodes)
+    {
+    pipeline->NumberOfTransformedNodes = numberOfTransformedNodes;
+    this->UpdateWidgetDisplayTransform(pipeline, transformNode, transformedNodes);
+    }
+
+  vtkNew<vtkMatrix4x4> toWorldMatrix;
+  int isLinear  = transformNode->GetMatrixTransformToWorld(toWorldMatrix.GetPointer());
+  vtkNew<vtkTransform> widgetTransform;
+  widgetTransform->Concatenate(toWorldMatrix.GetPointer());
+  widgetTransform->Concatenate(pipeline->WidgetDisplayTransform);
 
   // GetLineRepresentation() doesn't make sense but it is what it is.
   vtkBoxRepresentation* representation =
     vtkBoxRepresentation::SafeDownCast(
       pipeline->Widget->GetRepresentation());
 
-  vtkNew<vtkMatrix4x4> worldTransformMatrix;
-  transformNode->GetMatrixTransformToWorld(worldTransformMatrix.GetPointer());
-  vtkNew<vtkTransform> worldTransform;
-  worldTransform->SetMatrix(worldTransformMatrix.GetPointer());
-  worldTransform->Scale(100.0, 100.0, 100.0); // TODO make this a visualization parameter
-  representation->SetTransform(worldTransform.GetPointer());
+  representation->SetTransform(widgetTransform.GetPointer());
 }
 
 //---------------------------------------------------------------------------
@@ -344,35 +426,34 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal
 {
   assert(widget);
   vtkMRMLTransformNode* node = this->WidgetMap[widget];
+  vtkMRMLTransformDisplayNode* displayNode =
+    vtkMRMLTransformDisplayNode::SafeDownCast(node->GetDisplayNode());
+  Pipeline* pipeline = this->DisplayPipelines[displayNode];
   assert(displayNode);
 
   // GetLineRepresentation() doesn't make sense but it is what it is.
   vtkBoxRepresentation* representation =
     vtkBoxRepresentation::SafeDownCast(widget->GetRepresentation());
 
-  vtkNew<vtkTransform> worldToNew;
-  representation->GetTransform(worldToNew.GetPointer());
-  worldToNew->Scale(1.0 / 100.0, 1.0 / 100.0, 1.0 / 100.0);// TODO make this a visualization parameter
+  vtkNew<vtkTransform> widgetTransform;
+  representation->GetTransform(widgetTransform.GetPointer());
 
+  vtkNew<vtkTransform> toParent;
   vtkMRMLTransformNode* parentNode = node->GetParentTransformNode();
   if (parentNode)
     {
-    vtkNew<vtkGeneralTransform> worldFromParent;
-    parentNode->GetTransformFromWorld(worldFromParent.GetPointer());
-
-    vtkNew<vtkCollection> fromParentCollection;
-    vtkNew<vtkTransform> currentToNew;
-    fromParentCollection->AddItem(worldToNew.GetPointer());
-    fromParentCollection->AddItem(worldFromParent.GetPointer());
-    vtkMRMLTransformNode::FlattenGeneralTransform(
-      fromParentCollection.GetPointer(), worldToNew.GetPointer());
+    vtkNew<vtkMatrix4x4> worldFromParentMatrix;
+    parentNode->GetMatrixTransformFromWorld(worldFromParentMatrix.GetPointer());
+    toParent->Concatenate(worldFromParentMatrix.GetPointer());
     }
+  toParent->Concatenate(widgetTransform.GetPointer());
+  toParent->Concatenate(pipeline->WidgetDisplayTransform->GetLinearInverse());
 
-  node->SetAndObserveTransformToParent(worldToNew.GetPointer());
+  node->SetMatrixTransformToParent(toParent->GetMatrix());
 }
 
 //---------------------------------------------------------------------------
-void vtkMRMLTransformsDisplayableManager3D::vtkInternal::UpdateDisplayNodePipeline(vtkMRMLTransformDisplayNode* displayNode, const Pipeline* pipeline)
+void vtkMRMLTransformsDisplayableManager3D::vtkInternal::UpdateDisplayNodePipeline(vtkMRMLTransformDisplayNode* displayNode, Pipeline* pipeline)
 {
   // Sets visibility, set pipeline polydata input, update color
   //   calculate and set pipeline transforms.
@@ -408,7 +489,7 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::UpdateDisplayNodePipeli
   bool visible = this->IsVisible(displayNode);
   bool actorVisible = interactive ? false : visible;
   pipeline->Actor->SetVisibility(actorVisible);
-  pipeline->Widget->SetEnabled(interactive);
+  this->SetWidgetVisible(pipeline, interactive);
 
   if (!visible)
     {
@@ -451,6 +532,15 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::AddObservations(vtkMRML
     {
     broker->AddObservation(node, vtkMRMLTransformableNode::TransformModifiedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
     }
+
+  if (!broker->GetObservationExist(node, vtkMRMLTransformNode::TransformReferenceAddedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() ))
+    {
+    broker->AddObservation(node, vtkMRMLTransformNode::TransformReferenceAddedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
+    }
+  if (!broker->GetObservationExist(node, vtkMRMLTransformNode::TransformReferenceRemovedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() ))
+    {
+    broker->AddObservation(node, vtkMRMLTransformNode::TransformReferenceRemovedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -461,6 +551,11 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::RemoveObservations(vtkM
   observations = broker->GetObservations(node, vtkMRMLTransformableNode::TransformModifiedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
   broker->RemoveObservations(observations);
   observations = broker->GetObservations(node, vtkMRMLDisplayableNode::DisplayModifiedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
+  broker->RemoveObservations(observations);
+
+  observations = broker->GetObservations(node, vtkMRMLTransformNode::TransformReferenceAddedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
+  broker->RemoveObservations(observations);
+  observations = broker->GetObservations(node, vtkMRMLTransformNode::TransformReferenceRemovedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
   broker->RemoveObservations(observations);
 }
 
@@ -648,7 +743,9 @@ void vtkMRMLTransformsDisplayableManager3D::ProcessMRMLNodesEvents(vtkObject* ca
       this->Internal->UpdateDisplayNode(displayNode);
       this->RequestRender();
       }
-    else if (event == vtkMRMLTransformableNode::TransformModifiedEvent)
+    else if (event == vtkMRMLTransformableNode::TransformModifiedEvent
+       || event == vtkMRMLTransformNode::TransformReferenceAddedEvent
+       || event == vtkMRMLTransformNode::TransformReferenceRemovedEvent)
       {
       this->Internal->UpdateDisplayableTransforms(displayableNode);
       this->RequestRender();
@@ -728,6 +825,21 @@ void vtkMRMLTransformsDisplayableManager3D
   vtkBoxWidget2* boxWidget = vtkBoxWidget2::SafeDownCast(caller);
   if (boxWidget)
     {
-      this->Internal->UpdateNodeFromWidget(boxWidget);
+    this->Internal->UpdateNodeFromWidget(boxWidget);
+    this->RequestRender();
     }
+}
+
+//---------------------------------------------------------------------------
+vtkAbstractWidget* vtkMRMLTransformsDisplayableManager3D
+::GetWidget(vtkMRMLTransformDisplayNode* displayNode)
+{
+  vtkMRMLTransformsDisplayableManager3D::vtkInternal
+    ::PipelinesCacheType::iterator pipelineIter =
+      this->Internal->DisplayPipelines.find(displayNode);
+  if (pipelineIter != this->Internal->DisplayPipelines.end())
+    {
+    return pipelineIter->second->Widget;
+    }
+  return NULL;
 }
