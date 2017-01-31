@@ -3,5 +3,6 @@
 	<file>Icons/GlyphIcon.png</file>
 	<file>Icons/GridIcon.png</file>
 	<file>Icons/ContourIcon.png</file>
+	<file>Icons/MousePointer.png</file>
   </qresource>
 </RCC>
