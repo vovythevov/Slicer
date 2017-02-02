@@ -60,7 +60,7 @@ class SlicerTransformInteractionTest1Logic(ScriptedLoadableModuleLogic):
     threeDViewWidget.getDisplayableManagers(managers)
     for i in range(managers.GetNumberOfItems()):
       obj = managers.GetItemAsObject(i)
-      if obj.IsA('vtkMRMLTransformsDisplayableManager3D'):
+      if obj.IsA('vtkMRMLLinearTransformsDisplayableManager3D'):
         return obj
     return None
 
