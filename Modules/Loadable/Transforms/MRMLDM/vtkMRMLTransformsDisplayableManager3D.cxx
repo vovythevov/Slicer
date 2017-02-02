@@ -356,8 +356,9 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal
   double bounds[6];
   if (transformedNodes.size() > 0)
     {
+    vtkSlicerTransformLogic::GetNodesRASBounds(transformedNodes, bounds);
     validBounds =
-      vtkSlicerTransformLogic::GetNodesRASBounds(transformedNodes, bounds, false);
+      bounds[0] <= bounds[1] ||  bounds[2] <= bounds[3] ||  bounds[4] <= bounds[5];
     }
 
   if (validBounds)
@@ -543,13 +544,9 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::AddObservations(vtkMRML
     broker->AddObservation(node, vtkMRMLTransformableNode::TransformModifiedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
     }
 
-  if (!broker->GetObservationExist(node, vtkMRMLTransformNode::TransformReferenceAddedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() ))
+  if (!broker->GetObservationExist(node, vtkMRMLTransformNode::TransformReferenceModifiedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() ))
     {
-    broker->AddObservation(node, vtkMRMLTransformNode::TransformReferenceAddedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
-    }
-  if (!broker->GetObservationExist(node, vtkMRMLTransformNode::TransformReferenceRemovedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() ))
-    {
-    broker->AddObservation(node, vtkMRMLTransformNode::TransformReferenceRemovedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
+    broker->AddObservation(node, vtkMRMLTransformNode::TransformReferenceModifiedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
     }
 }
 
@@ -563,9 +560,7 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal::RemoveObservations(vtkM
   observations = broker->GetObservations(node, vtkMRMLDisplayableNode::DisplayModifiedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
   broker->RemoveObservations(observations);
 
-  observations = broker->GetObservations(node, vtkMRMLTransformNode::TransformReferenceAddedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
-  broker->RemoveObservations(observations);
-  observations = broker->GetObservations(node, vtkMRMLTransformNode::TransformReferenceRemovedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
+  observations = broker->GetObservations(node, vtkMRMLTransformNode::TransformReferenceModifiedEvent, this->External, this->External->GetMRMLNodesCallbackCommand() );
   broker->RemoveObservations(observations);
 }
 
@@ -754,8 +749,7 @@ void vtkMRMLTransformsDisplayableManager3D::ProcessMRMLNodesEvents(vtkObject* ca
       this->RequestRender();
       }
     else if (event == vtkMRMLTransformableNode::TransformModifiedEvent
-       || event == vtkMRMLTransformNode::TransformReferenceAddedEvent
-       || event == vtkMRMLTransformNode::TransformReferenceRemovedEvent)
+       || event == vtkMRMLTransformNode::TransformReferenceModifiedEvent)
       {
       this->Internal->UpdateDisplayableTransforms(displayableNode);
       this->RequestRender();
