@@ -164,9 +164,7 @@ bool vtkMRMLTransformsDisplayableManager3D::vtkInternal::IsVisible(vtkMRMLTransf
 bool vtkMRMLTransformsDisplayableManager3D::vtkInternal
 ::IsInteractive(vtkMRMLTransformDisplayNode* displayNode)
 {
-  return this->IsVisible(displayNode)
-    && (displayNode->GetVisualizationMode() ==
-      vtkMRMLTransformDisplayNode::VIS_MODE_INTERACTIVE);
+  return displayNode && displayNode->GetEditorVisibility();
 }
 
 //---------------------------------------------------------------------------

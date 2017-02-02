@@ -97,9 +97,8 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     #self.delayDisplay("Starting test_3D_interactionDefaults")
     logic = SlicerTransformInteractionTest1Logic()
     tNode, tdNode = logic.addTransform()
-    self.assertEquals(tdNode.GetVisualizationMode(), tdNode.VIS_MODE_GLYPH)
-    self.assertFalse(tdNode.GetVisibility())
-    self.assertFalse(tdNode.GetSliceIntersectionVisibility())
+    self.assertFalse(tdNode.GetEditorVisibility())
+    self.assertFalse(tdNode.GetEditorSliceIntersectionVisibility())
 
     slicer.app.layoutManager().layout = slicer.vtkMRMLLayoutNode.SlicerLayoutOneUp3DView
     manager = logic.getModel3DDisplayableManager()
@@ -109,12 +108,8 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     widget = manager.GetWidget(tdNode)
     self.assertFalse(widget.GetEnabled())
 
-    # Check when interactive only is on
-    tdNode.SetVisualizationMode(tdNode.VIS_MODE_INTERACTIVE)
-    self.assertFalse(widget.GetEnabled())
-
-    # Check when interactive AND visible
-    tdNode.SetVisibility(1)
+    # Check when interactive is on
+    tdNode.SetEditorVisibility(1)
     self.assertTrue(widget.GetEnabled())
 
     # Check default widget tranform values
@@ -144,17 +139,15 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     #self.delayDisplay("Starting test_3D_interactionVolume")
     logic = SlicerTransformInteractionTest1Logic()
     tNode, tdNode = logic.addTransform()
-    self.assertEquals(tdNode.GetVisualizationMode(), tdNode.VIS_MODE_GLYPH)
-    self.assertFalse(tdNode.GetVisibility())
-    self.assertFalse(tdNode.GetSliceIntersectionVisibility())
+    self.assertFalse(tdNode.GetEditorVisibility())
+    self.assertFalse(tdNode.GetEditorSliceIntersectionVisibility())
 
     slicer.app.layoutManager().layout = slicer.vtkMRMLLayoutNode.SlicerLayoutOneUp3DView
     manager = logic.getModel3DDisplayableManager()
     self.assertIsNotNone(manager)
 
     widget = manager.GetWidget(tdNode)
-    tdNode.SetVisualizationMode(tdNode.VIS_MODE_INTERACTIVE)
-    tdNode.SetVisibility(1)
+    tdNode.SetEditorVisibility(1)
     self.assertTrue(widget.GetEnabled())
 
     #
@@ -338,8 +331,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     self.assertIsNotNone(manager)
 
     widget = manager.GetWidget(tdNode)
-    tdNode.SetVisualizationMode(tdNode.VIS_MODE_INTERACTIVE)
-    tdNode.SetVisibility(1)
+    tdNode.SetEditorVisibility(1)
     self.assertTrue(widget.GetEnabled())
 
     representation = widget.GetRepresentation()
@@ -430,8 +422,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     self.assertIsNotNone(manager)
 
     widget = manager.GetWidget(tdNode)
-    tdNode.SetVisualizationMode(tdNode.VIS_MODE_INTERACTIVE)
-    tdNode.SetVisibility(1)
+    tdNode.SetEditorVisibility(1)
     self.assertTrue(widget.GetEnabled())
 
     representation = widget.GetRepresentation()
@@ -512,8 +503,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     self.assertIsNotNone(manager)
 
     widget = manager.GetWidget(tdNode)
-    tdNode.SetVisualizationMode(tdNode.VIS_MODE_INTERACTIVE)
-    tdNode.SetVisibility(1)
+    tdNode.SetEditorVisibility(1)
     self.assertTrue(widget.GetEnabled())
 
     # Save and clear scene
@@ -531,8 +521,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
 
     tdNode = tNode.GetDisplayNode()
     self.assertIsNotNone(tdNode)
-    self.assertEquals(tdNode.GetVisualizationMode(), tdNode.VIS_MODE_INTERACTIVE)
-    self.assertEquals(tdNode.GetVisibility(), 1)
+    self.assertEquals(tdNode.GetEditorVisibility(), 1)
 
     manager = logic.getModel3DDisplayableManager()
     self.assertIsNotNone(manager)

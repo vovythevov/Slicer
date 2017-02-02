@@ -88,6 +88,8 @@ vtkMRMLTransformDisplayNode::vtkMRMLTransformDisplayNode()
     this->ContourLevelsMm.push_back(level);
     }
 
+  this->EditorVisibility = 0;
+  this->EditorSliceIntersectionVisibility = 0;
   this->TranslationEnabled = 1;
   this->RotationEnabled = 1;
   this->ScalingEnabled = 1;
@@ -133,6 +135,8 @@ void vtkMRMLTransformDisplayNode::WriteXML(ostream& of, int nIndent)
   of << indent << " ContourLevelsMm=\"" << this->GetContourLevelsMmAsString() << "\"";
   of << indent << " ContourOpacity=\""<< this->ContourOpacity << "\"";
 
+  of << indent << " EditorVisibility=\""<< this->EditorVisibility << "\"";
+  of << indent << " EditorSliceIntersectionVisibility=\""<< this->EditorSliceIntersectionVisibility << "\"";
   of << indent << " TranslationEnabled=\""<< this->TranslationEnabled << "\"";
   of << indent << " RotationEnabled=\"" << this->RotationEnabled << "\"";
   of << indent << " ScalingEnabled=\""<< this->ScalingEnabled << "\"";
@@ -193,6 +197,8 @@ void vtkMRMLTransformDisplayNode::ReadXMLAttributes(const char** atts)
       SetContourLevelsMmFromString(attValue);
       continue;
       }
+    READ_FROM_ATT(EditorVisibility);
+    READ_FROM_ATT(EditorSliceIntersectionVisibility);
     READ_FROM_ATT(TranslationEnabled);
     READ_FROM_ATT(RotationEnabled);
     READ_FROM_ATT(ScalingEnabled);
@@ -236,6 +242,8 @@ void vtkMRMLTransformDisplayNode::Copy(vtkMRMLNode *anode)
   this->ContourOpacity = node->ContourOpacity;
   this->ContourLevelsMm = node->ContourLevelsMm;
 
+  this->EditorVisibility = node->EditorVisibility;
+  this->EditorSliceIntersectionVisibility = node->EditorSliceIntersectionVisibility;
   this->TranslationEnabled = node->TranslationEnabled;
   this->RotationEnabled = node->RotationEnabled;
   this->ScalingEnabled = node->ScalingEnabled;
@@ -268,9 +276,11 @@ void vtkMRMLTransformDisplayNode::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ContourOpacity = " << this->ContourOpacity << "\n";
   os << indent << "ContourLevelsMm = " << GetContourLevelsMmAsString() << "\n";
 
-  os << indent << " TranslationEnabled=\""<< this->TranslationEnabled << "\"";
-  os << indent << " RotationEnabled=\"" << this->RotationEnabled << "\"";
-  os << indent << " ScalingEnabled=\""<< this->ScalingEnabled << "\"";
+  os << indent << " EditorVisibility=\""<< this->EditorVisibility << "\n";
+  os << indent << " EditorSliceIntersectionVisibility=\""<< this->EditorSliceIntersectionVisibility << "\n";
+  os << indent << " TranslationEnabled=\""<< this->TranslationEnabled << "\n";
+  os << indent << " RotationEnabled=\"" << this->RotationEnabled << "\n";
+  os << indent << " ScalingEnabled=\""<< this->ScalingEnabled << "\n";
 }
 
 //---------------------------------------------------------------------------
@@ -367,7 +377,6 @@ const char* vtkMRMLTransformDisplayNode::ConvertVisualizationModeToString(int mo
     case VIS_MODE_GLYPH: return "GLYPH";
     case VIS_MODE_GRID: return "GRID";
     case VIS_MODE_CONTOUR: return "CONTOUR";
-    case VIS_MODE_INTERACTIVE: return "INTERACTIVE";
     default: return "";
     }
 }

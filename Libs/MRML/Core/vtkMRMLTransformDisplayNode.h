@@ -49,7 +49,6 @@ class VTK_MRML_EXPORT vtkMRMLTransformDisplayNode : public vtkMRMLDisplayNode
     VIS_MODE_GLYPH,
     VIS_MODE_GRID,
     VIS_MODE_CONTOUR,
-    VIS_MODE_INTERACTIVE,
     VIS_MODE_LAST // this should be the last mode
     };
 
@@ -169,6 +168,12 @@ class VTK_MRML_EXPORT vtkMRMLTransformDisplayNode : public vtkMRMLDisplayNode
   vtkGetMacro(ContourOpacity, double);
 
   // Interaction Parameters
+  vtkGetMacro(EditorVisibility, int);
+  vtkSetMacro(EditorVisibility, int);
+  vtkBooleanMacro(EditorVisibility, int);
+  vtkGetMacro(EditorSliceIntersectionVisibility, int);
+  vtkSetMacro(EditorSliceIntersectionVisibility, int);
+  vtkBooleanMacro(EditorSliceIntersectionVisibility, int);
   vtkGetMacro(TranslationEnabled, int);
   vtkSetMacro(TranslationEnabled, int);
   vtkBooleanMacro(TranslationEnabled, int);
@@ -223,6 +228,8 @@ protected:
   std::vector<double> ContourLevelsMm;
 
   // Interaction Parameters
+  int EditorVisibility;
+  int EditorSliceIntersectionVisibility;
   int TranslationEnabled;
   int RotationEnabled;
   int ScalingEnabled;

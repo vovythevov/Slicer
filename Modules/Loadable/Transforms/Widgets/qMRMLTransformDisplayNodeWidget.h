@@ -66,7 +66,6 @@ public slots:
   void setGlyphVisualizationMode(bool);
   void setGridVisualizationMode(bool);
   void setContourVisualizationMode(bool);
-  void setInteractiveVisualizationMode(bool);
 
   void updateGlyphSourceOptions(int sourceOption);
   void regionNodeChanged(vtkMRMLNode* node);
@@ -87,9 +86,11 @@ public slots:
   void setContourLevelsMm(QString values_str);
   void setContourResolutionMm(double resolutionMm);
   void setContourOpacityPercent(double opacity);
-  void setTranslationEnabled(int enabled);
-  void setRotationEnabled(int enabled);
-  void setScalingEnabled(int enabled);
+
+  void setInteractive(bool enabled);
+  void setTranslationEnabled(bool enabled);
+  void setRotationEnabled(bool enabled);
+  void setScalingEnabled(bool enabled);
 
   void setColorTableNode(vtkMRMLNode* colorTableNode);
 
