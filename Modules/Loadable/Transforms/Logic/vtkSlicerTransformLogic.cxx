@@ -1504,21 +1504,41 @@ void vtkSlicerTransformLogic::GetTransformedNodes(
 }
 
 //----------------------------------------------------------------------------
-bool vtkSlicerTransformLogic::GetNodesRASBounds(
+void vtkSlicerTransformLogic::GetNodesRASBounds(
   const std::vector<vtkMRMLDisplayableNode*>& nodes,
-  double bounds[6],
-  bool useTransform)
+  double bounds[6])
 {
   vtkBoundingBox box;
   for (size_t i = 0; i < nodes.size(); ++i)
     {
     double nodeBounds[6];
-    bool boundsValid = nodes[i]->GetRASBounds(nodeBounds, useTransform);
-    if (boundsValid)
+    nodes[i]->GetRASBounds(nodeBounds);
+    if (nodeBounds[0] <= nodeBounds[1] ||
+        nodeBounds[2] <= nodeBounds[3] ||
+        nodeBounds[4] <= nodeBounds[5])
       {
       box.AddBounds(nodeBounds);
       }
     }
   box.GetBounds(bounds);
-  return box.IsValid();
+}
+
+//----------------------------------------------------------------------------
+void vtkSlicerTransformLogic::GetNodesBounds(
+  const std::vector<vtkMRMLDisplayableNode*>& nodes,
+  double bounds[6])
+{
+  vtkBoundingBox box;
+  for (size_t i = 0; i < nodes.size(); ++i)
+    {
+    double nodeBounds[6];
+    nodes[i]->GetNodeBounds(nodeBounds);
+    if (nodeBounds[0] <= nodeBounds[1] ||
+        nodeBounds[2] <= nodeBounds[3] ||
+        nodeBounds[4] <= nodeBounds[5])
+      {
+      box.AddBounds(nodeBounds);
+      }
+    }
+  box.GetBounds(bounds);
 }

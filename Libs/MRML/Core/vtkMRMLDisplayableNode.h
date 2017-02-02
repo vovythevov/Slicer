@@ -194,11 +194,15 @@ public:
   virtual void SetDisplayClassVisibility(const char* nodeClass, int visible);
 
   /// Get bounding box in global RAS the form (xmin,xmax, ymin,ymax, zmin,zmax).
-  /// By default, this method retuns the bounds of the object with any transforms
-  /// that may be applied to it.
-  /// Otherwise, if useTransform is false, the returned bounds are untransformed.
-  /// The boolean return value denotes whether the bounds of node are valid.
-  virtual bool GetRASBounds(double bounds[6], bool useTransform=true);
+  /// This method retuns the bounds of the object with any transforms that may
+  /// be applied to it.
+  /// \sa GetNodeBounds()
+  virtual void GetRASBounds(double bounds[6]);
+
+  /// Get bounding box in global RAS the form (xmin,xmax, ymin,ymax, zmin,zmax).
+  /// This method always returns the bounds of the untransformed object.
+  /// \sa GetRASBounds()
+  virtual void GetNodeBounds(double bounds[6]);
 
   virtual const char* GetDisplayNodeReferenceRole();
 

@@ -138,11 +138,15 @@ public:
   void SetRASToIJKMatrix(vtkMatrix4x4* mat);
 
   /// Get bounding box in global RAS the form (xmin,xmax, ymin,ymax, zmin,zmax).
-  /// By default, this method retuns the bounds of the object with any transforms
-  /// that may be applied to it.
-  /// Otherwise, if useTransform is false, the returned bounds are untransformed.
-  /// The boolean return value denotes whether the bounds of node are valid.
-  virtual bool GetRASBounds(double bounds[6], bool useTransform=true);
+  /// This method retuns the bounds of the object with any transforms that may
+  /// be applied to it.
+  /// \sa GetNodeBounds()
+  virtual void GetRASBounds(double bounds[6]);
+
+  /// Get bounding box in global RAS the form (xmin,xmax, ymin,ymax, zmin,zmax).
+  /// This method always returns the bounds of the untransformed object.
+  /// \sa GetRASBounds()
+  virtual void GetNodeBounds(double bounds[6]);
 
   ///
   /// Associated display MRML node
@@ -220,6 +224,11 @@ protected:
   ///
   /// Called when a node reference ID is modified.
   virtual void OnNodeReferenceModified(vtkMRMLNodeReference *reference);
+
+  ///
+  /// Return the bounds of the node transformed or not depending on
+  /// the useTransform parameter
+  virtual void GetBoundsInternal(double bounds[6], bool useTransform);
 
   /// these are unit length direction cosines
   double IJKToRASDirections[3][3];

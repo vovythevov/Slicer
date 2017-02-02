@@ -319,9 +319,13 @@ void vtkMRMLDisplayableNode::SetDisplayClassVisibility(const char* nodeClass, in
 }
 
 //---------------------------------------------------------------------------
-bool vtkMRMLDisplayableNode
-::GetRASBounds(double bounds[6], bool useTransform)
+void vtkMRMLDisplayableNode::GetRASBounds(double bounds[6])
 {
   vtkMath::UninitializeBounds(bounds);
-  return false;
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLDisplayableNode::GetNodeBounds(double bounds[6])
+{
+  vtkMath::UninitializeBounds(bounds);
 }

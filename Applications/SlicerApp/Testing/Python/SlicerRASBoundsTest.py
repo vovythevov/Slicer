@@ -19,7 +19,9 @@ class SlicerRASBoundsTest(ScriptedLoadableModule):
     self.parent.categories = ["Testing.TestCases"]
     self.parent.dependencies = []
     self.parent.contributors = ["Johan Andruejol (Kitware Inc)"]
-    self.parent.helpText = """This test has been added to check the GetRASBounds method."""
+    self.parent.helpText = """
+      This test has been added to check the GetRASBounds and GetNodeBounds methods.
+      """
     self.parent.acknowledgementText = """
     This file was originally developed by Johan Andruejol, Kitware Inc.
     """
@@ -77,7 +79,7 @@ class SlicerRASBoundsTestTest(ScriptedLoadableModuleTest):
     untransformedBounds = [-165.68283081054688, 161.62185668945312, 7.542130470275879, 245.78431797027588, -347.62799072265625, -25.12799072265625]
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
-    volumeNode.GetRASBounds(bounds, False)
+    volumeNode.GetNodeBounds(bounds)
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
     transform = vtk.vtkTransform()
@@ -92,7 +94,7 @@ class SlicerRASBoundsTestTest(ScriptedLoadableModuleTest):
     volumeNode.GetRASBounds(bounds)
     self.assertListAlmostEquals(bounds, transformedBounds)
 
-    volumeNode.GetRASBounds(bounds, False)
+    volumeNode.GetNodeBounds(bounds)
     self.assertListAlmostEquals(bounds, untransformedBounds)
     #self.delayDisplay('test_Volume passed!')
 
@@ -125,7 +127,7 @@ class SlicerRASBoundsTestTest(ScriptedLoadableModuleTest):
     untransformedBounds = [-64.5710220336914, 235.01434326171875, -302.91339111328125, 287.3067932128906, -214.92703247070312, 212.1946258544922]
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
-    modelNode.GetRASBounds(bounds, False)
+    modelNode.GetNodeBounds(bounds)
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
     transform = vtk.vtkTransform()
@@ -140,7 +142,7 @@ class SlicerRASBoundsTestTest(ScriptedLoadableModuleTest):
     modelNode.GetRASBounds(bounds)
     self.assertListAlmostEquals(bounds, transformedBounds)
 
-    modelNode.GetRASBounds(bounds, False)
+    modelNode.GetNodeBounds(bounds)
     self.assertListAlmostEquals(bounds, untransformedBounds)
     #self.delayDisplay('test_Model passed!')
 
@@ -167,7 +169,7 @@ class SlicerRASBoundsTestTest(ScriptedLoadableModuleTest):
     untransformedBounds = [-200, 1.0, -90, 1003.01, -180.0, 0.0]
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
-    markupNode.GetRASBounds(bounds, False)
+    markupNode.GetNodeBounds(bounds)
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
     transform = vtk.vtkTransform()
@@ -182,7 +184,7 @@ class SlicerRASBoundsTestTest(ScriptedLoadableModuleTest):
     markupNode.GetRASBounds(bounds)
     self.assertListAlmostEquals(bounds, transformedBounds)
 
-    markupNode.GetRASBounds(bounds, False)
+    markupNode.GetNodeBounds(bounds)
     self.assertListAlmostEquals(bounds, untransformedBounds)
     #self.delayDisplay('test_Markup passed!')
 
@@ -199,7 +201,7 @@ class SlicerRASBoundsTestTest(ScriptedLoadableModuleTest):
     untransformedBounds = [-600, 800, 292, 308, -45.689, 44.311]
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
-    roiNode.GetRASBounds(bounds, False)
+    roiNode.GetNodeBounds(bounds)
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
     transform = vtk.vtkTransform()
@@ -214,7 +216,7 @@ class SlicerRASBoundsTestTest(ScriptedLoadableModuleTest):
     roiNode.GetRASBounds(bounds)
     self.assertListAlmostEquals(bounds, transformedBounds)
 
-    roiNode.GetRASBounds(bounds, False)
+    roiNode.GetNodeBounds(bounds)
     self.assertListAlmostEquals(bounds, untransformedBounds)
 
     #self.delayDisplay('test_ROI passed!')

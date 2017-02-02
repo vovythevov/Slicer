@@ -93,21 +93,14 @@ int vtkSlicerTransformLogicTest3(int argc, char * argv [])
     VTK_DOUBLE_MAX, VTK_DOUBLE_MIN,
     VTK_DOUBLE_MAX, VTK_DOUBLE_MIN
     };
-  if (vtkSlicerTransformLogic::GetNodesRASBounds(nodes, bounds) != false)
-    {
-    std::cerr << "Error: Expected invalid bounds" << std::endl;
-    success = false;
-    }
+  vtkSlicerTransformLogic::GetNodesBounds(nodes, bounds);
+  // Also add RAS BOIUNDs
   success &= CompareBounds(bounds, expectedNoBounds);
 
   // Test bounds with 1 nodes
   nodes.push_back(cube.GetPointer());
   double expected1NodeBounds[6] = {-0.5, 0.5, -0.5, 0.5, -0.5, 0.5};
-  if (vtkSlicerTransformLogic::GetNodesRASBounds(nodes, bounds) != true)
-    {
-    std::cerr << "Error: Expected valid bounds" << std::endl;
-    success = false;
-    }
+  vtkSlicerTransformLogic::GetNodesBounds(nodes, bounds);
   success &= CompareBounds(bounds, expected1NodeBounds);
 
   // Test bounds with transformed cube
@@ -118,11 +111,7 @@ int vtkSlicerTransformLogicTest3(int argc, char * argv [])
     29.2609081268, 30.7390918732,
     -90.816947937, -89.183052063
     };
-  if (vtkSlicerTransformLogic::GetNodesRASBounds(nodes, bounds) != true)
-    {
-    std::cerr << "Error: Expected valid bounds" << std::endl;
-    success = false;
-    }
+  vtkSlicerTransformLogic::GetNodesBounds(nodes, bounds);
   success &= CompareBounds(bounds, expectedTransformedNodeBounds);
 
   // Test bounds with transformed cube and the cube
@@ -134,11 +123,7 @@ int vtkSlicerTransformLogicTest3(int argc, char * argv [])
     -0.5, 30.7390918732,
     -90.816947937, 0.5
     };
-  if (vtkSlicerTransformLogic::GetNodesRASBounds(nodes, bounds) != true)
-    {
-    std::cerr << "Error: Expected valid bounds" << std::endl;
-    success = false;
-    }
+  vtkSlicerTransformLogic::GetNodesBounds(nodes, bounds);
   success &= CompareBounds(bounds, expectedBothNodeBounds);
 
   // Clean-up
