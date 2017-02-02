@@ -896,13 +896,13 @@ void vtkMRMLVolumeNode::ApplyTransformMatrix(vtkMatrix4x4* transformMatrix)
 //---------------------------------------------------------------------------
 void vtkMRMLVolumeNode::GetRASBounds(double bounds[6])
 {
-  vtkMRMLVolumeNode::GetBoundsInternal(bounds, false);
+  vtkMRMLVolumeNode::GetBoundsInternal(bounds, true);
 }
 
 //---------------------------------------------------------------------------
 void vtkMRMLVolumeNode::GetNodeBounds(double bounds[6])
 {
-  vtkMRMLVolumeNode::GetBoundsInternal(bounds, true);
+  vtkMRMLVolumeNode::GetBoundsInternal(bounds, false);
 }
 
 //---------------------------------------------------------------------------

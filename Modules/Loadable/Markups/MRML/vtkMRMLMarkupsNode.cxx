@@ -1297,7 +1297,7 @@ void vtkMRMLMarkupsNode::GetRASBounds(double bounds[6])
   bounds[4] = bounds[5] = markup_RAS[2];
   for (int i = 1; i < numberOfMarkups; i++)
     {
-    this->GetMarkupPoint(i, 0, markup_RAS);
+    this->GetMarkupPointWorld(i, 0, markup_RAS);
     if (markup_RAS[0] < bounds[0]) { bounds[0] = markup_RAS[0]; }
     if (markup_RAS[0] > bounds[1]) { bounds[1] = markup_RAS[0]; }
     if (markup_RAS[1] < bounds[2]) { bounds[2] = markup_RAS[1]; }
@@ -1318,6 +1318,7 @@ void vtkMRMLMarkupsNode::GetNodeBounds(double bounds[6])
     }
   double markup_RAS[4] = { 0, 0, 0, 1 };
   this->GetMarkupPoint(0, 0, markup_RAS);
+
   bounds[0] = bounds[1] = markup_RAS[0];
   bounds[2] = bounds[3] = markup_RAS[1];
   bounds[4] = bounds[5] = markup_RAS[2];
