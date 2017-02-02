@@ -88,6 +88,10 @@ vtkMRMLTransformDisplayNode::vtkMRMLTransformDisplayNode()
     this->ContourLevelsMm.push_back(level);
     }
 
+  this->TranslationEnabled = 1;
+  this->RotationEnabled = 1;
+  this->ScalingEnabled = 1;
+
   vtkNew<vtkIntArray> events;
   events->InsertNextValue(vtkCommand::ModifiedEvent);
   events->InsertNextValue(vtkMRMLTransformableNode::TransformModifiedEvent);
@@ -128,6 +132,10 @@ void vtkMRMLTransformDisplayNode::WriteXML(ostream& of, int nIndent)
   of << indent << " ContourResolutionMm=\""<< this->ContourResolutionMm << "\"";
   of << indent << " ContourLevelsMm=\"" << this->GetContourLevelsMmAsString() << "\"";
   of << indent << " ContourOpacity=\""<< this->ContourOpacity << "\"";
+
+  of << indent << " TranslationEnabled=\""<< this->TranslationEnabled << "\"";
+  of << indent << " RotationEnabled=\"" << this->RotationEnabled << "\"";
+  of << indent << " ScalingEnabled=\""<< this->ScalingEnabled << "\"";
 }
 
 
@@ -185,6 +193,9 @@ void vtkMRMLTransformDisplayNode::ReadXMLAttributes(const char** atts)
       SetContourLevelsMmFromString(attValue);
       continue;
       }
+    READ_FROM_ATT(TranslationEnabled);
+    READ_FROM_ATT(RotationEnabled);
+    READ_FROM_ATT(ScalingEnabled);
     }
 
   this->Modified();
@@ -225,6 +236,10 @@ void vtkMRMLTransformDisplayNode::Copy(vtkMRMLNode *anode)
   this->ContourOpacity = node->ContourOpacity;
   this->ContourLevelsMm = node->ContourLevelsMm;
 
+  this->TranslationEnabled = node->TranslationEnabled;
+  this->RotationEnabled = node->RotationEnabled;
+  this->ScalingEnabled = node->ScalingEnabled;
+
   this->EndModify(disabledModify);
 }
 
@@ -253,6 +268,9 @@ void vtkMRMLTransformDisplayNode::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ContourOpacity = " << this->ContourOpacity << "\n";
   os << indent << "ContourLevelsMm = " << GetContourLevelsMmAsString() << "\n";
 
+  os << indent << " TranslationEnabled=\""<< this->TranslationEnabled << "\"";
+  os << indent << " RotationEnabled=\"" << this->RotationEnabled << "\"";
+  os << indent << " ScalingEnabled=\""<< this->ScalingEnabled << "\"";
 }
 
 //---------------------------------------------------------------------------

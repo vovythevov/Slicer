@@ -416,6 +416,11 @@ void vtkMRMLTransformsDisplayableManager3D::vtkInternal
     vtkBoxRepresentation::SafeDownCast(pipeline->Widget->GetRepresentation());
 
   representation->SetTransform(widgetTransform.GetPointer());
+
+  pipeline->Widget->SetTranslationEnabled(displayNode->GetTranslationEnabled());
+  pipeline->Widget->SetRotationEnabled(displayNode->GetRotationEnabled());
+  pipeline->Widget->SetScalingEnabled(displayNode->GetScalingEnabled());
+  pipeline->Widget->SetMoveFacesEnabled(displayNode->GetScalingEnabled());
 }
 
 //---------------------------------------------------------------------------

@@ -168,6 +168,17 @@ class VTK_MRML_EXPORT vtkMRMLTransformDisplayNode : public vtkMRMLDisplayNode
   vtkSetMacro(ContourOpacity, double);
   vtkGetMacro(ContourOpacity, double);
 
+  // Interaction Parameters
+  vtkGetMacro(TranslationEnabled, int);
+  vtkSetMacro(TranslationEnabled, int);
+  vtkBooleanMacro(TranslationEnabled, int);
+  vtkGetMacro(RotationEnabled, int);
+  vtkSetMacro(RotationEnabled, int);
+  vtkBooleanMacro(RotationEnabled, int);
+  vtkGetMacro(ScalingEnabled, int);
+  vtkSetMacro(ScalingEnabled, int);
+  vtkBooleanMacro(ScalingEnabled, int);
+
   /// Set the default color table
   /// Create and a procedural color node with default colors and use it for visualization.
   void SetDefaultColors();
@@ -210,6 +221,11 @@ protected:
   /// Opacity of the 3D contour. Between 0 and 1.
   double ContourOpacity;
   std::vector<double> ContourLevelsMm;
+
+  // Interaction Parameters
+  int TranslationEnabled;
+  int RotationEnabled;
+  int ScalingEnabled;
 
  protected:
   vtkMRMLTransformDisplayNode ( );
