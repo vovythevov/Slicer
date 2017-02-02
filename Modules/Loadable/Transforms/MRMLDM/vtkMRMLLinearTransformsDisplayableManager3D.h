@@ -20,8 +20,8 @@
 
 ==============================================================================*/
 
-#ifndef __vtkMRMLTransformsDisplayableManager3D_h
-#define __vtkMRMLTransformsDisplayableManager3D_h
+#ifndef __vtkMRMLLinearTransformsDisplayableManager3D_h
+#define __vtkMRMLLinearTransformsDisplayableManager3D_h
 
 // MRMLDisplayableManager includes
 #include "vtkMRMLAbstractThreeDViewDisplayableManager.h"
@@ -37,19 +37,24 @@ class vtkMRMLTransformDisplayNode;
 /// Displays transforms in 3D viewers as glyphs, deformed grid, or
 /// contour surfaces
 ///
-class VTK_SLICER_TRANSFORMS_MODULE_MRMLDISPLAYABLEMANAGER_EXPORT vtkMRMLTransformsDisplayableManager3D
+class VTK_SLICER_TRANSFORMS_MODULE_MRMLDISPLAYABLEMANAGER_EXPORT vtkMRMLLinearTransformsDisplayableManager3D
   : public vtkMRMLAbstractThreeDViewDisplayableManager
 {
 public:
 
-  static vtkMRMLTransformsDisplayableManager3D* New();
-  vtkTypeMacro(vtkMRMLTransformsDisplayableManager3D,vtkMRMLAbstractThreeDViewDisplayableManager);
+  static vtkMRMLLinearTransformsDisplayableManager3D* New();
+  vtkTypeMacro(vtkMRMLLinearTransformsDisplayableManager3D,vtkMRMLAbstractThreeDViewDisplayableManager);
   void PrintSelf(ostream& os, vtkIndent indent);
+
+  /// \internal
+  /// For testing purposes only:
+  /// Return the widget associated with the given transform, if any.
+  vtkAbstractWidget* GetWidget(vtkMRMLTransformDisplayNode* displayNode);
 
 protected:
 
-  vtkMRMLTransformsDisplayableManager3D();
-  virtual ~vtkMRMLTransformsDisplayableManager3D();
+  vtkMRMLLinearTransformsDisplayableManager3D();
+  virtual ~vtkMRMLLinearTransformsDisplayableManager3D();
 
   virtual void UnobserveMRMLScene();
   virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node);
@@ -67,10 +72,12 @@ protected:
   /// Initialize the displayable manager
   virtual void Create();
 
+  virtual void ProcessWidgetsEvents(vtkObject* caller, unsigned long event, void* callData);
+
 private:
 
-  vtkMRMLTransformsDisplayableManager3D(const vtkMRMLTransformsDisplayableManager3D&); // Not implemented
-  void operator=(const vtkMRMLTransformsDisplayableManager3D&);                 // Not Implemented
+  vtkMRMLLinearTransformsDisplayableManager3D(const vtkMRMLLinearTransformsDisplayableManager3D&); // Not implemented
+  void operator=(const vtkMRMLLinearTransformsDisplayableManager3D&);                 // Not Implemented
 
   class vtkInternal;
   vtkInternal* Internal;
