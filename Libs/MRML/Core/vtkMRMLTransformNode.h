@@ -278,17 +278,14 @@ public:
 
   ///
   /// Event called on the transform node:
-  ///  - TransformReferenceAddedEvent:
-  /// Called whenever a vtkMRMLTransformableNode starts observing a transform.
+  ///  - TransformReferenceModifiedEvent:
+  /// Called whenever a vtkMRMLTransformableNode beigns or stops from observing
+  /// a transform.
   /// For example: volume->SetAndObserveTransformNodeID(transform->GetID());
-  ///  - TransformReferenceAddedEvent:
-  /// Called whenever a vtkMRMLTransformableNode stops observing a transform.
-  /// For example: volume->SetAndObserveTransformNodeID("");
   /// \sa vtkMRMLTransformableNode
   enum
     {
-    TransformReferenceAddedEvent = 25000,
-    TransformReferenceRemovedEvent,
+    TransformReferenceModifiedEvent = 25000,
     };
 
   ///

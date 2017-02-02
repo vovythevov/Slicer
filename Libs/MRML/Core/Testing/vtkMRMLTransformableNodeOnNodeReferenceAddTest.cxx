@@ -95,13 +95,13 @@ int populateScene(vtkMRMLScene* scene)
   transformableableNode->SetAndObserveTransformNodeID(transformNode->GetID());
   if (!callback->GetErrorString().empty() ||
       callback->GetNumberOfModified() != 0 ||
-      callback->GetNumberOfEvents(vtkMRMLTransformNode::TransformReferenceAddedEvent) != 1)
+      callback->GetNumberOfEvents(vtkMRMLTransformNode::TransformReferenceModifiedEvent) != 1)
     {
-    std::cerr << "vtkMRMLTransformableNode::TransformReferenceAddedEvent failed."
+    std::cerr << "vtkMRMLTransformNode::TransformReferenceModifiedEvent failed."
               << callback->GetErrorString().c_str() << " "
               << "Number of ModifiedEvent: " << callback->GetNumberOfModified() << " "
               << "Number of TransformReferenceAddedEvent: "
-              << callback->GetNumberOfEvents(vtkMRMLTransformNode::TransformReferenceAddedEvent)
+              << callback->GetNumberOfEvents(vtkMRMLTransformNode::TransformReferenceModifiedEvent)
               << std::endl;
     return EXIT_FAILURE;
     }
@@ -165,13 +165,13 @@ int testScene(vtkMRMLScene* scene)
   volumeNode->SetAndObserveTransformNodeID(NULL);
   if (!transformCallback->GetErrorString().empty() ||
       transformCallback->GetNumberOfModified() != 0 ||
-      transformCallback->GetNumberOfEvents(vtkMRMLTransformNode::TransformReferenceRemovedEvent) != 1)
+      transformCallback->GetNumberOfEvents(vtkMRMLTransformNode::TransformReferenceModifiedEvent) != 1)
     {
-    std::cerr << "vtkMRMLTransformableNode::TransformReferenceRemovedEvent failed."
+    std::cerr << "vtkMRMLTransformNode::vtkMRMLTransformNode failed."
               << transformCallback->GetErrorString().c_str() << " "
               << "Number of ModifiedEvent: " << transformCallback->GetNumberOfModified() << " "
-              << "Number of TransformReferenceRemovedEvent: "
-              << transformCallback->GetNumberOfEvents(vtkMRMLTransformNode::TransformReferenceRemovedEvent)
+              << "Number of TransformReferenceModifiedEvent: "
+              << transformCallback->GetNumberOfEvents(vtkMRMLTransformNode::TransformReferenceModifiedEvent)
               << std::endl;
     return EXIT_FAILURE;
     }

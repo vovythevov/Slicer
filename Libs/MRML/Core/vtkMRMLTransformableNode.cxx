@@ -117,18 +117,7 @@ void vtkMRMLTransformableNode::SetAndObserveTransformNodeID(const char *transfor
     transformNodeID = 0;
     }
 
-  vtkMRMLTransformNode* previousNode = this->GetParentTransformNode();
   this->SetAndObserveNodeReferenceID(this->GetTransformNodeReferenceRole(), transformNodeID);
-  if (tnode)
-    {
-    tnode->InvokeEvent(
-      vtkMRMLTransformNode::TransformReferenceAddedEvent, this);
-    }
-  else if (previousNode)
-    {
-    previousNode->InvokeEvent(
-      vtkMRMLTransformNode::TransformReferenceRemovedEvent, this);
-    }
 }
 
 
@@ -152,6 +141,45 @@ void vtkMRMLTransformableNode::ProcessMRMLEvents ( vtkObject *caller,
     }
 }
 
+//---------------------------------------------------------------------------
+void vtkMRMLTransformableNode
+::OnNodeReferenceAdded(vtkMRMLNodeReference* reference)
+{
+  Superclass::OnNodeReferenceAdded(reference);
+  if (std::string(reference->GetReferenceRole()) == this->TransformNodeReferenceRole)
+    {
+    this->InvokeCustomModifiedEvent(
+      vtkMRMLTransformableNode::TransformModifiedEvent, reference->GetReferencedNode());
+    }
+
+  vtkMRMLTransformNode* transformNode =
+    vtkMRMLTransformNode::SafeDownCast(reference->GetReferencedNode());
+  if (transformNode)
+    {
+    transformNode->InvokeEvent(
+      vtkMRMLTransformNode::TransformReferenceModifiedEvent, this);
+    }
+}
+
+//---------------------------------------------------------------------------
+void vtkMRMLTransformableNode
+::OnNodeReferenceRemoved(vtkMRMLNodeReference* reference)
+{
+  Superclass::OnNodeReferenceRemoved(reference);
+  if (std::string(reference->GetReferenceRole()) == this->TransformNodeReferenceRole)
+    {
+    this->InvokeCustomModifiedEvent(
+      vtkMRMLTransformableNode::TransformModifiedEvent, reference->GetReferencedNode());
+    }
+
+  vtkMRMLTransformNode* transformNode =
+    vtkMRMLTransformNode::SafeDownCast(reference->GetReferencedNode());
+  if (transformNode)
+    {
+    transformNode->InvokeEvent(
+      vtkMRMLTransformNode::TransformReferenceModifiedEvent, this);
+    }
+}
 
 //-----------------------------------------------------------
 bool vtkMRMLTransformableNode::CanApplyNonLinearTransforms()const
