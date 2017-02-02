@@ -148,6 +148,11 @@ void qMRMLTransformDisplayNodeWidgetPrivate
   QObject::connect(this->ContourResolutionMm, SIGNAL(valueChanged(double)), q, SLOT(setContourResolutionMm(double)));
   QObject::connect(this->ContourOpacityPercent, SIGNAL(valueChanged(double)), q, SLOT(setContourOpacityPercent(double)));
 
+  // Interactive Parameters
+  QObject::connect(this->InteractiveTranslationCheckBox, SIGNAL(stateChanged(int)), q, SLOT(setTranslationEnabled(int)));
+  QObject::connect(this->InteractiveRotationCheckBox, SIGNAL(stateChanged(int)), q, SLOT(setRotationEnabled(int)));
+  QObject::connect(this->InteractiveScalingCheckBox, SIGNAL(stateChanged(int)), q, SLOT(setScalingEnabled(int)));
+
   q->updateWidgetFromDisplayNode();
 }
 
@@ -564,6 +569,39 @@ void qMRMLTransformDisplayNodeWidget
     }
   d->TransformDisplayNode->SetVisualizationMode(
     vtkMRMLTransformDisplayNode::VIS_MODE_INTERACTIVE);
+}
+
+//-----------------------------------------------------------------------------
+void qMRMLTransformDisplayNodeWidget::setTranslationEnabled(int enabled)
+{
+  Q_D(qMRMLTransformDisplayNodeWidget);
+  if (!d->TransformDisplayNode)
+    {
+    return;
+    }
+  d->TransformDisplayNode->SetTranslationEnabled(enabled);
+}
+
+//-----------------------------------------------------------------------------
+void qMRMLTransformDisplayNodeWidget::setRotationEnabled(int enabled)
+{
+  Q_D(qMRMLTransformDisplayNodeWidget);
+  if (!d->TransformDisplayNode)
+    {
+    return;
+    }
+  d->TransformDisplayNode->SetRotationEnabled(enabled);
+}
+
+//-----------------------------------------------------------------------------
+void qMRMLTransformDisplayNodeWidget::setScalingEnabled(int enabled)
+{
+  Q_D(qMRMLTransformDisplayNodeWidget);
+  if (!d->TransformDisplayNode)
+    {
+    return;
+    }
+  d->TransformDisplayNode->SetScalingEnabled(enabled);
 }
 
 //-----------------------------------------------------------------------------

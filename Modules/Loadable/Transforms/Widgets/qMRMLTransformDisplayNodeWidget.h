@@ -87,6 +87,9 @@ public slots:
   void setContourLevelsMm(QString values_str);
   void setContourResolutionMm(double resolutionMm);
   void setContourOpacityPercent(double opacity);
+  void setTranslationEnabled(int enabled);
+  void setRotationEnabled(int enabled);
+  void setScalingEnabled(int enabled);
 
   void setColorTableNode(vtkMRMLNode* colorTableNode);
 
