@@ -107,6 +107,13 @@ void qMRMLTransformDisplayNodeWidgetPrivate
 
   this->AdvancedParameters->setCollapsed(true);
 
+  // Interaction panel
+  QObject::connect(this->InteractionVisibleCheckBox, SIGNAL(toggled(bool)), q, SLOT(setInteractive(bool)));
+  QObject::connect(this->InteractiveTranslationCheckBox, SIGNAL(toggled(bool)), q, SLOT(setTranslationEnabled(bool)));
+  QObject::connect(this->InteractiveRotationCheckBox, SIGNAL(toggled(bool)), q, SLOT(setRotationEnabled(bool)));
+  QObject::connect(this->InteractiveScalingCheckBox, SIGNAL(toggled(bool)), q, SLOT(setScalingEnabled(bool)));
+
+  // Visualization panel
   // by default the glyph option is selected, so hide the parameter sets for the other options
   this->GlyphOptions->show();
   this->ContourOptions->hide();
@@ -120,7 +127,6 @@ void qMRMLTransformDisplayNodeWidgetPrivate
   QObject::connect(this->GlyphToggle, SIGNAL(toggled(bool)), q, SLOT(setGlyphVisualizationMode(bool)));
   QObject::connect(this->GridToggle, SIGNAL(toggled(bool)), q, SLOT(setGridVisualizationMode(bool)));
   QObject::connect(this->ContourToggle, SIGNAL(toggled(bool)), q, SLOT(setContourVisualizationMode(bool)));
-  QObject::connect(this->InteractiveToggle, SIGNAL(toggled(bool)), q, SLOT(setInteractiveVisualizationMode(bool)));
 
   // Glyph Parameters
   QObject::connect(this->GlyphPointsNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)), q, SLOT(glyphPointsNodeChanged(vtkMRMLNode*)));
@@ -147,11 +153,6 @@ void qMRMLTransformDisplayNodeWidgetPrivate
   QObject::connect(this->ContourLevelsMm, SIGNAL(textChanged(QString)), q, SLOT(setContourLevelsMm(QString)));
   QObject::connect(this->ContourResolutionMm, SIGNAL(valueChanged(double)), q, SLOT(setContourResolutionMm(double)));
   QObject::connect(this->ContourOpacityPercent, SIGNAL(valueChanged(double)), q, SLOT(setContourOpacityPercent(double)));
-
-  // Interactive Parameters
-  QObject::connect(this->InteractiveTranslationCheckBox, SIGNAL(stateChanged(int)), q, SLOT(setTranslationEnabled(int)));
-  QObject::connect(this->InteractiveRotationCheckBox, SIGNAL(stateChanged(int)), q, SLOT(setRotationEnabled(int)));
-  QObject::connect(this->InteractiveScalingCheckBox, SIGNAL(stateChanged(int)), q, SLOT(setScalingEnabled(int)));
 
   q->updateWidgetFromDisplayNode();
 }
@@ -223,7 +224,6 @@ void qMRMLTransformDisplayNodeWidget
     case vtkMRMLTransformDisplayNode::VIS_MODE_GLYPH: d->GlyphToggle->setChecked(true); break;
     case vtkMRMLTransformDisplayNode::VIS_MODE_GRID: d->GridToggle->setChecked(true); break;
     case vtkMRMLTransformDisplayNode::VIS_MODE_CONTOUR: d->ContourToggle->setChecked(true); break;
-    case vtkMRMLTransformDisplayNode::VIS_MODE_INTERACTIVE: d->InteractiveToggle->setChecked(true); break;
     }
 
   d->RegionNodeComboBox->setCurrentNode(d->TransformDisplayNode->GetRegionNode());
@@ -559,20 +559,18 @@ void qMRMLTransformDisplayNodeWidget::setContourVisualizationMode(bool activate)
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget
-::setInteractiveVisualizationMode(bool activate)
+void qMRMLTransformDisplayNodeWidget::setInteractive(bool enabled)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
-  if (!activate || !d->TransformDisplayNode)
+  if (!d->TransformDisplayNode)
     {
     return;
     }
-  d->TransformDisplayNode->SetVisualizationMode(
-    vtkMRMLTransformDisplayNode::VIS_MODE_INTERACTIVE);
+  d->TransformDisplayNode->SetEditorVisibility(enabled);
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setTranslationEnabled(int enabled)
+void qMRMLTransformDisplayNodeWidget::setTranslationEnabled(bool enabled)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
@@ -583,7 +581,7 @@ void qMRMLTransformDisplayNodeWidget::setTranslationEnabled(int enabled)
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setRotationEnabled(int enabled)
+void qMRMLTransformDisplayNodeWidget::setRotationEnabled(bool enabled)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
@@ -594,7 +592,7 @@ void qMRMLTransformDisplayNodeWidget::setRotationEnabled(int enabled)
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setScalingEnabled(int enabled)
+void qMRMLTransformDisplayNodeWidget::setScalingEnabled(bool enabled)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
