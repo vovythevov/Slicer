@@ -370,10 +370,14 @@ void vtkMRMLLinearTransformsDisplayableManager3D::vtkInternal
 
   representation->SetTransform(widgetTransform.GetPointer());
 
-  pipeline->Widget->SetTranslationEnabled(displayNode->GetTranslationEnabled());
-  pipeline->Widget->SetRotationEnabled(displayNode->GetRotationEnabled());
-  pipeline->Widget->SetScalingEnabled(displayNode->GetScalingEnabled());
-  pipeline->Widget->SetMoveFacesEnabled(displayNode->GetScalingEnabled());
+  pipeline->Widget->SetTranslationEnabled(
+    displayNode->GetEditorTranslationEnabled());
+  pipeline->Widget->SetRotationEnabled(
+    displayNode->GetEditorRotationEnabled());
+  pipeline->Widget->SetScalingEnabled(
+    displayNode->GetEditorScalingEnabled());
+  pipeline->Widget->SetMoveFacesEnabled(
+    displayNode->GetEditorScalingEnabled());
 }
 
 //---------------------------------------------------------------------------

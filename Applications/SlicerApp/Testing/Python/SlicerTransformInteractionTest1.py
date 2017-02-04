@@ -109,7 +109,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     self.assertFalse(widget.GetEnabled())
 
     # Check when interactive is on
-    tdNode.SetEditorVisibility(1)
+    tdNode.SetEditorVisibility(True)
     self.assertTrue(widget.GetEnabled())
 
     # Check default widget tranform values
@@ -147,7 +147,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     self.assertIsNotNone(manager)
 
     widget = manager.GetWidget(tdNode)
-    tdNode.SetEditorVisibility(1)
+    tdNode.SetEditorVisibility(True)
     self.assertTrue(widget.GetEnabled())
 
     #
@@ -331,7 +331,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     self.assertIsNotNone(manager)
 
     widget = manager.GetWidget(tdNode)
-    tdNode.SetEditorVisibility(1)
+    tdNode.SetEditorVisibility(True)
     self.assertTrue(widget.GetEnabled())
 
     representation = widget.GetRepresentation()
@@ -422,7 +422,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     self.assertIsNotNone(manager)
 
     widget = manager.GetWidget(tdNode)
-    tdNode.SetEditorVisibility(1)
+    tdNode.SetEditorVisibility(True)
     self.assertTrue(widget.GetEnabled())
 
     representation = widget.GetRepresentation()
@@ -503,7 +503,7 @@ class SlicerTransformInteractionTest1Test(ScriptedLoadableModuleTest):
     self.assertIsNotNone(manager)
 
     widget = manager.GetWidget(tdNode)
-    tdNode.SetEditorVisibility(1)
+    tdNode.SetEditorVisibility(True)
     self.assertTrue(widget.GetEnabled())
 
     # Save and clear scene

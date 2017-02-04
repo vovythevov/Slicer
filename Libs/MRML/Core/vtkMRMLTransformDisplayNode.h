@@ -168,21 +168,21 @@ class VTK_MRML_EXPORT vtkMRMLTransformDisplayNode : public vtkMRMLDisplayNode
   vtkGetMacro(ContourOpacity, double);
 
   // Interaction Parameters
-  vtkGetMacro(EditorVisibility, int);
-  vtkSetMacro(EditorVisibility, int);
-  vtkBooleanMacro(EditorVisibility, int);
-  vtkGetMacro(EditorSliceIntersectionVisibility, int);
-  vtkSetMacro(EditorSliceIntersectionVisibility, int);
-  vtkBooleanMacro(EditorSliceIntersectionVisibility, int);
-  vtkGetMacro(TranslationEnabled, int);
-  vtkSetMacro(TranslationEnabled, int);
-  vtkBooleanMacro(TranslationEnabled, int);
-  vtkGetMacro(RotationEnabled, int);
-  vtkSetMacro(RotationEnabled, int);
-  vtkBooleanMacro(RotationEnabled, int);
-  vtkGetMacro(ScalingEnabled, int);
-  vtkSetMacro(ScalingEnabled, int);
-  vtkBooleanMacro(ScalingEnabled, int);
+  vtkGetMacro(EditorVisibility, bool);
+  vtkSetMacro(EditorVisibility, bool);
+  vtkBooleanMacro(EditorVisibility, bool);
+  vtkGetMacro(EditorSliceIntersectionVisibility, bool);
+  vtkSetMacro(EditorSliceIntersectionVisibility, bool);
+  vtkBooleanMacro(EditorSliceIntersectionVisibility, bool);
+  vtkGetMacro(EditorTranslationEnabled, bool);
+  vtkSetMacro(EditorTranslationEnabled, bool);
+  vtkBooleanMacro(EditorTranslationEnabled, bool);
+  vtkGetMacro(EditorRotationEnabled, bool);
+  vtkSetMacro(EditorRotationEnabled, bool);
+  vtkBooleanMacro(EditorRotationEnabled, bool);
+  vtkGetMacro(EditorScalingEnabled, bool);
+  vtkSetMacro(EditorScalingEnabled, bool);
+  vtkBooleanMacro(EditorScalingEnabled, bool);
 
   /// Set the default color table
   /// Create and a procedural color node with default colors and use it for visualization.
@@ -228,11 +228,11 @@ protected:
   std::vector<double> ContourLevelsMm;
 
   // Interaction Parameters
-  int EditorVisibility;
-  int EditorSliceIntersectionVisibility;
-  int TranslationEnabled;
-  int RotationEnabled;
-  int ScalingEnabled;
+  bool EditorVisibility;
+  bool EditorSliceIntersectionVisibility;
+  bool EditorTranslationEnabled;
+  bool EditorRotationEnabled;
+  bool EditorScalingEnabled;
 
  protected:
   vtkMRMLTransformDisplayNode ( );

@@ -108,10 +108,10 @@ void qMRMLTransformDisplayNodeWidgetPrivate
   this->AdvancedParameters->setCollapsed(true);
 
   // Interaction panel
-  QObject::connect(this->InteractionVisibleCheckBox, SIGNAL(toggled(bool)), q, SLOT(setInteractive(bool)));
-  QObject::connect(this->InteractiveTranslationCheckBox, SIGNAL(toggled(bool)), q, SLOT(setTranslationEnabled(bool)));
-  QObject::connect(this->InteractiveRotationCheckBox, SIGNAL(toggled(bool)), q, SLOT(setRotationEnabled(bool)));
-  QObject::connect(this->InteractiveScalingCheckBox, SIGNAL(toggled(bool)), q, SLOT(setScalingEnabled(bool)));
+  QObject::connect(this->InteractionVisibleCheckBox, SIGNAL(toggled(bool)), q, SLOT(setEditorVisibility(bool)));
+  QObject::connect(this->InteractiveTranslationCheckBox, SIGNAL(toggled(bool)), q, SLOT(setEditorTranslationEnabled(bool)));
+  QObject::connect(this->InteractiveRotationCheckBox, SIGNAL(toggled(bool)), q, SLOT(setEditorRotationEnabled(bool)));
+  QObject::connect(this->InteractiveScalingCheckBox, SIGNAL(toggled(bool)), q, SLOT(setEditorScalingEnabled(bool)));
 
   // Visualization panel
   // by default the glyph option is selected, so hide the parameter sets for the other options
@@ -559,7 +559,7 @@ void qMRMLTransformDisplayNodeWidget::setContourVisualizationMode(bool activate)
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setInteractive(bool enabled)
+void qMRMLTransformDisplayNodeWidget::setEditorVisibility(bool enabled)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
@@ -570,36 +570,36 @@ void qMRMLTransformDisplayNodeWidget::setInteractive(bool enabled)
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setTranslationEnabled(bool enabled)
+void qMRMLTransformDisplayNodeWidget::setEditorTranslationEnabled(bool enabled)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
     {
     return;
     }
-  d->TransformDisplayNode->SetTranslationEnabled(enabled);
+  d->TransformDisplayNode->SetEditorTranslationEnabled(enabled);
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setRotationEnabled(bool enabled)
+void qMRMLTransformDisplayNodeWidget::setEditorRotationEnabled(bool enabled)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
     {
     return;
     }
-  d->TransformDisplayNode->SetRotationEnabled(enabled);
+  d->TransformDisplayNode->SetEditorRotationEnabled(enabled);
 }
 
 //-----------------------------------------------------------------------------
-void qMRMLTransformDisplayNodeWidget::setScalingEnabled(bool enabled)
+void qMRMLTransformDisplayNodeWidget::setEditorScalingEnabled(bool enabled)
 {
   Q_D(qMRMLTransformDisplayNodeWidget);
   if (!d->TransformDisplayNode)
     {
     return;
     }
-  d->TransformDisplayNode->SetScalingEnabled(enabled);
+  d->TransformDisplayNode->SetEditorScalingEnabled(enabled);
 }
 
 //-----------------------------------------------------------------------------

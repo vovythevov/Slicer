@@ -88,11 +88,11 @@ vtkMRMLTransformDisplayNode::vtkMRMLTransformDisplayNode()
     this->ContourLevelsMm.push_back(level);
     }
 
-  this->EditorVisibility = 0;
-  this->EditorSliceIntersectionVisibility = 0;
-  this->TranslationEnabled = 1;
-  this->RotationEnabled = 1;
-  this->ScalingEnabled = 1;
+  this->EditorVisibility = false;
+  this->EditorSliceIntersectionVisibility = false;
+  this->EditorTranslationEnabled = true;
+  this->EditorRotationEnabled = true;
+  this->EditorScalingEnabled = true;
 
   vtkNew<vtkIntArray> events;
   events->InsertNextValue(vtkCommand::ModifiedEvent);
@@ -137,9 +137,9 @@ void vtkMRMLTransformDisplayNode::WriteXML(ostream& of, int nIndent)
 
   of << indent << " EditorVisibility=\""<< this->EditorVisibility << "\"";
   of << indent << " EditorSliceIntersectionVisibility=\""<< this->EditorSliceIntersectionVisibility << "\"";
-  of << indent << " TranslationEnabled=\""<< this->TranslationEnabled << "\"";
-  of << indent << " RotationEnabled=\"" << this->RotationEnabled << "\"";
-  of << indent << " ScalingEnabled=\""<< this->ScalingEnabled << "\"";
+  of << indent << " EditorTranslationEnabled=\""<< this->EditorTranslationEnabled << "\"";
+  of << indent << " EditorRotationEnabled=\"" << this->EditorRotationEnabled << "\"";
+  of << indent << " EditorScalingEnabled=\""<< this->EditorScalingEnabled << "\"";
 }
 
 
@@ -199,9 +199,9 @@ void vtkMRMLTransformDisplayNode::ReadXMLAttributes(const char** atts)
       }
     READ_FROM_ATT(EditorVisibility);
     READ_FROM_ATT(EditorSliceIntersectionVisibility);
-    READ_FROM_ATT(TranslationEnabled);
-    READ_FROM_ATT(RotationEnabled);
-    READ_FROM_ATT(ScalingEnabled);
+    READ_FROM_ATT(EditorTranslationEnabled);
+    READ_FROM_ATT(EditorRotationEnabled);
+    READ_FROM_ATT(EditorScalingEnabled);
     }
 
   this->Modified();
@@ -244,9 +244,9 @@ void vtkMRMLTransformDisplayNode::Copy(vtkMRMLNode *anode)
 
   this->EditorVisibility = node->EditorVisibility;
   this->EditorSliceIntersectionVisibility = node->EditorSliceIntersectionVisibility;
-  this->TranslationEnabled = node->TranslationEnabled;
-  this->RotationEnabled = node->RotationEnabled;
-  this->ScalingEnabled = node->ScalingEnabled;
+  this->EditorTranslationEnabled = node->EditorTranslationEnabled;
+  this->EditorRotationEnabled = node->EditorRotationEnabled;
+  this->EditorScalingEnabled = node->EditorScalingEnabled;
 
   this->EndModify(disabledModify);
 }
@@ -278,9 +278,9 @@ void vtkMRMLTransformDisplayNode::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << " EditorVisibility=\""<< this->EditorVisibility << "\n";
   os << indent << " EditorSliceIntersectionVisibility=\""<< this->EditorSliceIntersectionVisibility << "\n";
-  os << indent << " TranslationEnabled=\""<< this->TranslationEnabled << "\n";
-  os << indent << " RotationEnabled=\"" << this->RotationEnabled << "\n";
-  os << indent << " ScalingEnabled=\""<< this->ScalingEnabled << "\n";
+  os << indent << " TranslationEnabled=\""<< this->EditorTranslationEnabled << "\n";
+  os << indent << " RotationEnabled=\"" << this->EditorRotationEnabled << "\n";
+  os << indent << " ScalingEnabled=\""<< this->EditorScalingEnabled << "\n";
 }
 
 //---------------------------------------------------------------------------
