@@ -184,6 +184,14 @@ class VTK_MRML_EXPORT vtkMRMLTransformDisplayNode : public vtkMRMLDisplayNode
   vtkSetMacro(EditorScalingEnabled, bool);
   vtkBooleanMacro(EditorScalingEnabled, bool);
 
+  /// Ask the editor to recompute its bounds by invoking the
+  /// TransformUpdateEditorBoundsEvent event.
+  void UpdateEditorBounds();
+  enum
+    {
+    TransformUpdateEditorBoundsEvent = 2750
+    };
+
   /// Set the default color table
   /// Create and a procedural color node with default colors and use it for visualization.
   void SetDefaultColors();
@@ -233,6 +241,9 @@ protected:
   bool EditorTranslationEnabled;
   bool EditorRotationEnabled;
   bool EditorScalingEnabled;
+
+  /// Not serialized.
+  bool EditorUpdateBounds;
 
  protected:
   vtkMRMLTransformDisplayNode ( );

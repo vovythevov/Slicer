@@ -112,6 +112,7 @@ void qMRMLTransformDisplayNodeWidgetPrivate
   QObject::connect(this->InteractiveTranslationCheckBox, SIGNAL(toggled(bool)), q, SLOT(setEditorTranslationEnabled(bool)));
   QObject::connect(this->InteractiveRotationCheckBox, SIGNAL(toggled(bool)), q, SLOT(setEditorRotationEnabled(bool)));
   QObject::connect(this->InteractiveScalingCheckBox, SIGNAL(toggled(bool)), q, SLOT(setEditorScalingEnabled(bool)));
+  QObject::connect(this->UpdateBoundsPushButton, SIGNAL(clicked()), q, SLOT(updateEditorBounds()));
 
   // Visualization panel
   // by default the glyph option is selected, so hide the parameter sets for the other options
@@ -274,6 +275,9 @@ void qMRMLTransformDisplayNodeWidget
       this->colorUpdateRange();
      }
    }
+
+  // Interaction
+  d->InteractionVisibleCheckBox->setChecked(d->TransformDisplayNode->GetEditorVisibility());
 }
 
 //-----------------------------------------------------------------------------
@@ -680,4 +684,15 @@ void qMRMLTransformDisplayNodeWidget::onColorModifiedEvent()
     return;
     }
   d->TransformDisplayNode->SetColorMap(d->ColorTransferFunction);
+}
+
+// ----------------------------------------------------------------------------
+void qMRMLTransformDisplayNodeWidget::updateEditorBounds()
+{
+  Q_D(qMRMLTransformDisplayNodeWidget);
+  if (!d->TransformDisplayNode)
+    {
+    return;
+    }
+  d->TransformDisplayNode->UpdateEditorBounds();
 }

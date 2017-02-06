@@ -91,6 +91,7 @@ public slots:
   void setEditorTranslationEnabled(bool enabled);
   void setEditorRotationEnabled(bool enabled);
   void setEditorScalingEnabled(bool enabled);
+  void updateEditorBounds();
 
   void setColorTableNode(vtkMRMLNode* colorTableNode);
 

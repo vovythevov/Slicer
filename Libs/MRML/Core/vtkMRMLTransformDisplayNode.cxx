@@ -593,3 +593,9 @@ void vtkMRMLTransformDisplayNode::SetColorMap(vtkColorTransferFunction* newColor
     }
   this->EndModify(oldModified);
 }
+
+//----------------------------------------------------------------------------
+void vtkMRMLTransformDisplayNode::UpdateEditorBounds()
+{
+  this->InvokeEvent(vtkMRMLTransformDisplayNode::TransformUpdateEditorBoundsEvent);
+}
