@@ -43,19 +43,15 @@ class QStandardItemModel;
 class Q_SLICER_BASE_QTCORE_EXPORT qSlicerExtensionsManagerModel : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY(int numberOfInstalledExtensions READ numberOfInstalledExtensions)
-  Q_PROPERTY(QStringList installedExtensions READ installedExtensions)
-  Q_PROPERTY(QStringList enabledExtensions READ enabledExtensions)
-  Q_PROPERTY(QUrl serverUrl READ serverUrl)
-  Q_PROPERTY(QUrl serverUrlWithPackagePath READ serverUrlWithPackagePath)
-  Q_PROPERTY(QUrl serverUrlWithExtensionsStorePath READ serverUrlWithExtensionsStorePath)
-  Q_PROPERTY(QString extensionsInstallPath READ extensionsInstallPath)
-  Q_PROPERTY(bool newExtensionEnabledByDefault READ newExtensionEnabledByDefault WRITE setNewExtensionEnabledByDefault)
-  Q_PROPERTY(QString extensionsSettingsFilePath READ extensionsSettingsFilePath WRITE setExtensionsSettingsFilePath)
-  Q_PROPERTY(QString slicerRevision READ slicerRevision WRITE setSlicerRevision)
-  Q_PROPERTY(QString slicerOs READ slicerOs WRITE setSlicerOs)
-  Q_PROPERTY(QString slicerArch READ slicerArch WRITE setSlicerArch)
-  Q_PROPERTY(QString slicerVersion READ slicerVersion WRITE setSlicerVersion)
+  Q_PROPERTY(bool newExtensionEnabledByDefault
+    READ newExtensionEnabledByDefault
+    WRITE setNewExtensionEnabledByDefault
+    NOTIFY newExtensionEnabledByDefaultChanged)
+  Q_PROPERTY(QString extensionsSettingsFilePath READ extensionsSettingsFilePath CONSTANT)
+  Q_PROPERTY(QString slicerRevision READ slicerRevision CONSTANT)
+  Q_PROPERTY(QString slicerOs READ slicerOs WRITE setSlicerOs NOTIFY slicerOsChanged)
+  Q_PROPERTY(QString slicerArch READ slicerArch NOTIFY slicerArchChanged)
+  Q_PROPERTY(QString slicerVersion READ slicerVersion NOTIFY slicerVersionChanged)
 public:
   /// Superclass typedef
   typedef QObject Superclass;
@@ -75,12 +71,11 @@ public:
   /// \brief Extension metadata typedef
   typedef QVariantMap ExtensionMetadataType;
 
-  QUrl serverUrl()const;
-  QUrl serverUrlWithPackagePath()const;
-  QUrl serverUrlWithExtensionsStorePath()const;
+  Q_INVOKABLE QUrl serverUrl()const;
+  Q_INVOKABLE QUrl serverUrlWithPackagePath()const;
+  Q_INVOKABLE QUrl serverUrlWithExtensionsStorePath()const;
 
-  QString extensionsInstallPath()const;
-
+  Q_INVOKABLE QString extensionsInstallPath()const;
   Q_INVOKABLE QString extensionInstallPath(const QString& extensionName) const;
 
   Q_INVOKABLE QStringList extensionModulePaths(const QString& extensionName)const;
@@ -98,11 +93,11 @@ public:
 
   /// \brief Return the number of installed extensions
   /// \sa installExtension, isExtensionInstalled, installedExtensions, extensionInstalled
-  int numberOfInstalledExtensions()const;
+  Q_INVOKABLE int numberOfInstalledExtensions()const;
 
   /// \brief Return names of all installed extensions
   /// \sa installExtension, numberOfInstalledExtensions, isExtensionInstalled, extensionInstalled
-  QStringList installedExtensions()const;
+  Q_INVOKABLE QStringList installedExtensions()const;
 
   /// \brief Return True if the \a extensionName is enabled
   /// \sa setExtensionEnabled, extensionEnabledChanged, enabledExtensions
@@ -139,7 +134,7 @@ public:
 
   /// \brief Return names of all enabled extensions
   /// \sa setExtensionEnabled, extensionEnabledChanged, isExtensionEnabled
-  QStringList enabledExtensions()const;
+  Q_INVOKABLE QStringList enabledExtensions()const;
 
   QString extensionsSettingsFilePath()const;
   void setExtensionsSettingsFilePath(const QString& extensionsSettingsFilePath);
@@ -342,6 +337,13 @@ signals:
   void slicerRequirementsChanged(const QString& revision, const QString& os, const QString& arch);
 
   void messageLogged(const QString& text, ctkErrorLogLevel::LogLevels level) const;
+
+  void newExtensionEnabledByDefaultChanged(bool);
+
+  void slicerOsChanged(const QString&);
+  void slicerRevisionChanged(const QString&);
+  void slicerArchChanged(const QString&);
+  void slicerVersionChanged(const QString&);
 
 protected slots:
 

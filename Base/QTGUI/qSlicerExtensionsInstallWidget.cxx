@@ -40,6 +40,15 @@
 #include "qSlicerExtensionsManagerModel.h"
 
 //-----------------------------------------------------------------------------
+class ExtensionInstallWidgetPassThough : public QObject
+{
+public:
+  qSlicerExtensionsInstallWidget* Widget;
+
+  void refresh() { this->Widget->refresh(); };
+};
+
+//-----------------------------------------------------------------------------
 class qSlicerExtensionsInstallWidgetPrivate
 {
   Q_DECLARE_PUBLIC(qSlicerExtensionsInstallWidget);
@@ -62,13 +71,17 @@ public:
   QString SlicerArch;
 
   bool BrowsingEnabled;
+
+  ExtensionInstallWidgetPassThough PassThrough;
 };
 
 // --------------------------------------------------------------------------
 qSlicerExtensionsInstallWidgetPrivate::qSlicerExtensionsInstallWidgetPrivate(qSlicerExtensionsInstallWidget& object)
   : q_ptr(&object), BrowsingEnabled(true)
 {
+  Q_Q(qSlicerExtensionsInstallWidget);
   this->ExtensionsManagerModel = 0;
+  this->PassThrough.Widget = q;
 }
 
 // --------------------------------------------------------------------------
@@ -329,11 +342,11 @@ void qSlicerExtensionsInstallWidget::initJavascript()
   this->webView()->page()->mainFrame()->addToJavaScriptWindowObject(
         "extensions_install_widget", this);
 #else
-    this->webView()->page()->webChannel()->registerObject(
+  this->webView()->page()->webChannel()->registerObject(
         "extensions_manager_model", d->ExtensionsManagerModel);
 
   this->webView()->page()->webChannel()->registerObject(
-        "extensions_install_widget", this);
+        "extensions_install_widget", &(d->PassThrough));
 #endif
 }
 

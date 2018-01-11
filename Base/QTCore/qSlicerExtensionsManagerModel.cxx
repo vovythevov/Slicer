@@ -939,7 +939,12 @@ QString qSlicerExtensionsManagerModel::extensionDescriptionFile(const QString& e
 void qSlicerExtensionsManagerModel::setNewExtensionEnabledByDefault(bool value)
 {
   Q_D(qSlicerExtensionsManagerModel);
+  if (value == d->NewExtensionEnabledByDefault)
+    {
+    return;
+    }
   d->NewExtensionEnabledByDefault = value;
+  emit this->newExtensionEnabledByDefaultChanged(value);
 }
 
 // --------------------------------------------------------------------------
@@ -2051,6 +2056,7 @@ void qSlicerExtensionsManagerModel::setSlicerRevision(const QString& revision)
   d->SlicerRevision = revision;
 
   emit this->slicerRequirementsChanged(d->SlicerRevision, d->SlicerOs, d->SlicerArch);
+  emit this->slicerRevisionChanged(d->SlicerRevision);
 }
 
 // --------------------------------------------------------------------------
@@ -2067,6 +2073,7 @@ void qSlicerExtensionsManagerModel::setSlicerOs(const QString& os)
   d->SlicerOs = os;
 
   emit this->slicerRequirementsChanged(d->SlicerRevision, d->SlicerOs, d->SlicerArch);
+  emit this->slicerOsChanged(d->SlicerOs);
 }
 
 // --------------------------------------------------------------------------
@@ -2083,6 +2090,7 @@ void qSlicerExtensionsManagerModel::setSlicerArch(const QString& arch)
   d->SlicerArch = arch;
 
   emit this->slicerRequirementsChanged(d->SlicerRevision, d->SlicerOs, d->SlicerArch);
+  emit this->slicerArchChanged(d->SlicerArch);
 }
 
 // --------------------------------------------------------------------------
@@ -2119,7 +2127,19 @@ void qSlicerExtensionsManagerModel::identifyIncompatibleExtensions()
 
 // --------------------------------------------------------------------------
 CTK_GET_CPP(qSlicerExtensionsManagerModel, QString, slicerVersion, SlicerVersion)
-CTK_SET_CPP(qSlicerExtensionsManagerModel, const QString& , setSlicerVersion, SlicerVersion)
+
+// --------------------------------------------------------------------------
+void qSlicerExtensionsManagerModel::setSlicerVersion(const QString& version)
+{
+  Q_D(qSlicerExtensionsManagerModel);
+  if (d->SlicerVersion == version)
+    {
+    return;
+    }
+  d->SlicerRevision = version;
+
+  emit this->slicerVersionChanged(d->SlicerVersion);
+}
 
 // --------------------------------------------------------------------------
 QStringList qSlicerExtensionsManagerModel::isExtensionCompatible(
