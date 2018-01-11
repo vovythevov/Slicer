@@ -100,16 +100,23 @@ class ExtensionInstallWidgetPassThough : public QObject
 {
   Q_OBJECT
   Q_PROPERTY(QString slicerOs READ slicerOs WRITE setSlicerOs NOTIFY slicerOsChanged)
+  Q_PROPERTY(bool refreshed READ hasRefreshed WRITE refresh NOTIFY refreshed)
 
 public:
   ExtensionInstallWidgetPassThough(qSlicerExtensionsInstallWidget* w);
   QString slicerOs() const;
 
+  // Just here for the property wrapping. Never actually called.
+  bool hasRefreshed() const { return true; };
+
 public slots:
   void setSlicerOs(const QString& os);
 
+  void refresh(bool b) { Q_UNUSED(b);  this->Widget->refresh(); };
+
 signals:
   void slicerOsChanged(const QString&);
+  void refreshed(bool); // Just here for the property wrapping. Never actually called.
 
 protected:
   qSlicerExtensionsInstallWidget* Widget;

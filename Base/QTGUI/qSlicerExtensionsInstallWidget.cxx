@@ -181,8 +181,8 @@ void qSlicerExtensionsInstallWidgetPrivate::setFailurePage(const QStringList& er
       "          <li>Check that <b>3D Slicer</b> is properly installed. "
       "<a href='http://www.slicer.org/slicerWiki/index.php/Documentation/Slicer/Install'>Read more ?</a></li>"
       "        </ul>"
-      "        <button id='errorTryAgain' onclick='window.extensions_install_widget.refresh();' autofocus='true'>Try Again</button>"
-      "      </div>"
+      //"        <button id='errorTryAgain' onclick='window.extensions_install_widget.refresh();' autofocus='true'>Try Again</button>"
+      "        <button id='errorTryAgain' onclick='window.extensions_install_widget.refresh = 1;' autofocus='true'>Try Again</button>"
       "    </div>"
       "  </div>"
       "</div>";

@@ -34,7 +34,7 @@
 #include <QWebEngineScript>
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
-#include <qwebenginescriptcollection.h>
+#include <QWebEngineScriptCollection>
 #include <QFile>
 #endif
 
@@ -129,11 +129,13 @@ void qSlicerWebWidgetPrivate::init()
         "new QWebChannel(qt.webChannelTransport, function(channel) {"
         " window.extensions_install_widget = channel.objects.extensions_install_widget;"
         " console.log('From core: ' + extensions_install_widget.slicerOs);"
+        "if (typeof qt != 'undefined') {"
+        "  console.info('QT DEFINED WTF ?') }"
         "});"
         );
     QWebEngineScript script;
     script.setSourceCode(webChannelJs);
-    script.setName("qwebchannel_appended.js");
+    script.setName("qwebchannel.js");
     script.setWorldId(QWebEngineScript::MainWorld);
     script.setInjectionPoint(QWebEngineScript::DocumentCreation);
     script.setRunsOnSubFrames(false);
@@ -317,6 +319,7 @@ void qSlicerWebWidget::onLoadFinished(bool ok)
 {
   Q_UNUSED(ok);
   Q_D(qSlicerWebWidget);
+  //qDebug() << "Loaded " << this->webView()->page()->requestedUrl();
   d->ProgressBar->reset();
   d->ProgressBar->setVisible(false);
 }
@@ -365,9 +368,10 @@ bool qSlicerWebWidget::eventFilter(QObject* obj, QEvent* event)
       (event->type() == QEvent::Show || event->type() == QEvent::Hide))
     {
     d->setDocumentWebkitHidden(!d->WebView->isVisible());
+
     this->evalJS("if (typeof $ != 'undefined') {"
-                 "  $.event.trigger({type: 'webkitvisibilitychange'})"
-                 "} else { console.info('JQuery not loaded - Failed to trigger webkitvisibilitychange') }");
+        "  $.event.trigger({type: 'webkitvisibilitychange'})"
+        "} else { console.info('JQuery not loaded - Failed to trigger webkitvisibilitychange') }");
     }
   return QObject::eventFilter(obj, event);
 }
