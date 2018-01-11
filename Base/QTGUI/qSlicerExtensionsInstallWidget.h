@@ -36,7 +36,7 @@ class Q_SLICER_BASE_QTGUI_EXPORT qSlicerExtensionsInstallWidget
 {
   Q_OBJECT
   Q_PROPERTY(QString slicerRevision READ slicerRevision WRITE setSlicerRevision)
-  Q_PROPERTY(QString slicerOs READ slicerOs WRITE setSlicerOs)
+  Q_PROPERTY(QString slicerOs READ slicerOs WRITE setSlicerOs NOTIFY slicerOsChanged)
   Q_PROPERTY(QString slicerArch READ slicerArch WRITE setSlicerArch)
   Q_PROPERTY(bool browsingEnabled READ isBrowsingEnabled WRITE setBrowsingEnabled)
 public:
@@ -78,11 +78,15 @@ public slots:
 
   void onMessageLogged(const QString& text, ctkErrorLogLevel::LogLevels level);
 
+signals:
+  void slicerOsChanged(const QString&);
+
 protected slots:
   virtual void initJavascript();
   virtual void onLoadFinished(bool ok);
   virtual void onLinkClicked(const QUrl& url);
   virtual void onLoadStarted();
+
 protected:
   QScopedPointer<qSlicerExtensionsInstallWidgetPrivate> d_ptr;
 
@@ -90,5 +94,27 @@ private:
   Q_DECLARE_PRIVATE(qSlicerExtensionsInstallWidget);
   Q_DISABLE_COPY(qSlicerExtensionsInstallWidget);
 };
+
+//-----------------------------------------------------------------------------
+class ExtensionInstallWidgetPassThough : public QObject
+{
+  Q_OBJECT
+  Q_PROPERTY(QString slicerOs READ slicerOs WRITE setSlicerOs NOTIFY slicerOsChanged)
+
+public:
+  ExtensionInstallWidgetPassThough(qSlicerExtensionsInstallWidget* w);
+  QString slicerOs() const;
+
+public slots:
+  void setSlicerOs(const QString& os);
+
+signals:
+  void slicerOsChanged(const QString&);
+
+protected:
+  qSlicerExtensionsInstallWidget* Widget;
+
+};
+
 
 #endif

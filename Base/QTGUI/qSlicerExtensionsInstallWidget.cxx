@@ -39,14 +39,31 @@
 #include "qSlicerExtensionsInstallWidget.h"
 #include "qSlicerExtensionsManagerModel.h"
 
-//-----------------------------------------------------------------------------
-class ExtensionInstallWidgetPassThough : public QObject
-{
-public:
-  qSlicerExtensionsInstallWidget* Widget;
+namespace {
+#define PASS_THROUGH_GET_CPP(PUB, _TYPE, _NAME)   \
+  _TYPE PUB::_NAME()const                         \
+  {                                               \
+    return this->Widget->_NAME();                 \
+  }
+#define PASS_THROUGH_SET_CPP(PUB, _TYPE, _NAME)   \
+  void PUB::_NAME(_TYPE var)                      \
+  {                                               \
+    this->Widget->_NAME(var);                     \
+  }
+#define PASS_THROUGH_CONNECT(_NAME) \
+  QObject::connect(this->Widget, SIGNAL(_NAME), this, SIGNAL(_NAME));
+}
 
-  void refresh() { this->Widget->refresh(); };
-};
+// ---------------------------------------------------------------------------- -
+ExtensionInstallWidgetPassThough
+::ExtensionInstallWidgetPassThough(qSlicerExtensionsInstallWidget* w)
+{
+  this->Widget = w;
+  PASS_THROUGH_CONNECT(slicerOsChanged(const QString&));
+}
+
+PASS_THROUGH_GET_CPP(ExtensionInstallWidgetPassThough, QString, slicerOs)
+PASS_THROUGH_SET_CPP(ExtensionInstallWidgetPassThough, const QString&, setSlicerOs)
 
 //-----------------------------------------------------------------------------
 class qSlicerExtensionsInstallWidgetPrivate
@@ -57,6 +74,7 @@ protected:
 
 public:
   qSlicerExtensionsInstallWidgetPrivate(qSlicerExtensionsInstallWidget& object);
+  ~qSlicerExtensionsInstallWidgetPrivate();
 
   /// Return the URL allowing to retrieve the extension list page
   /// associated with the current architecture, operating system and slicer revision.
@@ -72,7 +90,7 @@ public:
 
   bool BrowsingEnabled;
 
-  ExtensionInstallWidgetPassThough PassThrough;
+  ExtensionInstallWidgetPassThough* PassThrough;
 };
 
 // --------------------------------------------------------------------------
@@ -81,7 +99,13 @@ qSlicerExtensionsInstallWidgetPrivate::qSlicerExtensionsInstallWidgetPrivate(qSl
 {
   Q_Q(qSlicerExtensionsInstallWidget);
   this->ExtensionsManagerModel = 0;
-  this->PassThrough.Widget = q;
+  this->PassThrough = new ExtensionInstallWidgetPassThough(q);
+}
+
+// --------------------------------------------------------------------------
+qSlicerExtensionsInstallWidgetPrivate::~qSlicerExtensionsInstallWidgetPrivate()
+{
+  delete this->PassThrough;
 }
 
 // --------------------------------------------------------------------------
@@ -246,7 +270,18 @@ CTK_SET_CPP(qSlicerExtensionsInstallWidget, const QString&, setSlicerRevision, S
 
 // --------------------------------------------------------------------------
 CTK_GET_CPP(qSlicerExtensionsInstallWidget, QString, slicerOs, SlicerOs)
-CTK_SET_CPP(qSlicerExtensionsInstallWidget, const QString&, setSlicerOs, SlicerOs)
+
+// --------------------------------------------------------------------------
+void qSlicerExtensionsInstallWidget::setSlicerOs(const QString& os)
+{
+  Q_D(qSlicerExtensionsInstallWidget);
+  if (os == d->SlicerOs)
+    {
+    return;
+    }
+  d->SlicerOs = os;
+  emit this->slicerOsChanged(d->SlicerOs);
+}
 
 // --------------------------------------------------------------------------
 CTK_GET_CPP(qSlicerExtensionsInstallWidget, QString, slicerArch, SlicerArch)
@@ -346,7 +381,7 @@ void qSlicerExtensionsInstallWidget::initJavascript()
         "extensions_manager_model", d->ExtensionsManagerModel);
 
   this->webView()->page()->webChannel()->registerObject(
-        "extensions_install_widget", &(d->PassThrough));
+        "extensions_install_widget", d->PassThrough);
 #endif
 }
 
